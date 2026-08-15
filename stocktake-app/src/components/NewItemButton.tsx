@@ -20,6 +20,7 @@ interface Props {
 export default function NewItemButton({ branch, profile }: Props) {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
   const router = useRouter()
   const supabase = createClient()
 
@@ -42,6 +43,7 @@ export default function NewItemButton({ branch, profile }: Props) {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
+    setSubmitError(null)
 
     const { data: item, error } = await supabase
       .from('stock_items')
@@ -61,8 +63,15 @@ export default function NewItemButton({ branch, profile }: Props) {
       .select()
       .single()
 
-    if (!error && item) {
-      await supabase.from('action_logs').insert({
+    if (error) {
+      console.error('[NewItemButton] insert error:', error)
+      setSubmitError(error.message)
+      setLoading(false)
+      return
+    }
+
+    if (item) {
+      const { error: logError } = await supabase.from('action_logs').insert({
         item_id: item.id,
         user_id: profile?.id,
         user_name: profile?.full_name || profile?.email,
@@ -71,6 +80,7 @@ export default function NewItemButton({ branch, profile }: Props) {
         note: form.action_required || null,
         new_status: 'in_progress',
       })
+      if (logError) console.error('[NewItemButton] action_log error:', logError)
       setOpen(false)
       router.refresh()
     }
@@ -79,7 +89,7 @@ export default function NewItemButton({ branch, profile }: Props) {
 
   return (
     <>
-      <Button onClick={() => setOpen(true)} className="bg-blue-800 hover:bg-blue-900">
+      <Button onClick={() => { setOpen(true); setSubmitError(null) }} className="bg-blue-800 hover:bg-blue-900">
         <Plus className="h-4 w-4 mr-1.5" />
         New Item
       </Button>
@@ -157,6 +167,12 @@ export default function NewItemButton({ branch, profile }: Props) {
                 className="w-full border rounded-md px-3 py-2 text-sm min-h-[80px] focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
+
+            {submitError && (
+              <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-md px-3 py-2">
+                Error: {submitError}
+              </p>
+            )}
 
             <div className="flex gap-2 justify-end pt-1">
               <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
