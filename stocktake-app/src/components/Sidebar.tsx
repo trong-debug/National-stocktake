@@ -12,7 +12,6 @@ import {
   Settings,
   Upload,
   ChevronRight,
-  Package,
   Users,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -39,9 +38,7 @@ export default function Sidebar({ profile }: SidebarProps) {
       {/* Logo */}
       <div className="px-4 py-5 border-b border-blue-800">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
-            <Package className="h-4 w-4 text-blue-900" />
-          </div>
+          <img src="/becool-logo.svg" alt="Be Cool Couriers" className="w-9 h-9 rounded-full" />
           <div>
             <p className="font-bold text-sm leading-tight">National Stocktake</p>
             <p className="text-blue-300 text-xs">Be Cool Couriers</p>
