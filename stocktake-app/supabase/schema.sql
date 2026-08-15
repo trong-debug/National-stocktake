@@ -186,6 +186,7 @@ grant select, insert, update, delete on table public.stock_items  to authenticat
 grant select, insert                  on table public.action_logs  to authenticated;
 grant select                          on table public.status_codes to authenticated;
 grant select, update                  on table public.profiles     to authenticated;
+grant select                          on public.dashboard_stats    to authenticated;
 
 -- ── Helper: dashboard stats view ─────────────────────────────
 create or replace view public.dashboard_stats as
