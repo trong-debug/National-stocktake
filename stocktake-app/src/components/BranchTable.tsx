@@ -2,7 +2,6 @@
 
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { useCallback, useState, useTransition } from 'react'
-import Link from 'next/link'
 import { format } from 'date-fns'
 import type { Branch, Dept, ItemStatus, StockItem, Profile } from '@/types'
 import { DEPT_MAP, DEPTS } from '@/lib/constants'
@@ -11,7 +10,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
-import { Search, ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react'
+import { Search, ChevronLeft, ChevronRight } from 'lucide-react'
 
 interface Props {
   items: StockItem[]
@@ -122,7 +121,6 @@ export default function BranchTable({ items, branch, totalPages, currentPage, to
               <th className="text-left px-3 py-2.5 font-medium">Dept</th>
               <th className="text-left px-3 py-2.5 font-medium">Status</th>
               <th className="text-left px-3 py-2.5 font-medium">Action Required</th>
-              <th className="px-3 py-2.5" />
             </tr>
           </thead>
           <tbody>
@@ -135,8 +133,9 @@ export default function BranchTable({ items, branch, totalPages, currentPage, to
             ) : items.map((item, i) => (
               <tr
                 key={item.id}
+                onClick={() => router.push(`/item/${item.id}`)}
                 className={cn(
-                  'border-b hover:bg-blue-50 transition-colors',
+                  'border-b hover:bg-blue-50 transition-colors cursor-pointer',
                   item.status === 'completed' && 'opacity-60',
                   i % 2 === 1 && 'bg-slate-50/40'
                 )}
@@ -183,14 +182,6 @@ export default function BranchTable({ items, branch, totalPages, currentPage, to
                   <p className="truncate text-slate-700 text-xs" title={item.action_required || ''}>
                     {item.action_required || <span className="text-slate-400">—</span>}
                   </p>
-                </td>
-                <td className="px-3 py-2.5">
-                  <Link
-                    href={`/item/${item.id}`}
-                    className="text-blue-600 hover:text-blue-800 inline-flex items-center gap-0.5"
-                  >
-                    <ExternalLink className="h-3.5 w-3.5" />
-                  </Link>
                 </td>
               </tr>
             ))}
