@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Label } from '@/components/ui/label'
-import { CheckCircle2, Send, ArrowRightLeft } from 'lucide-react'
+import { CheckCircle2, ArrowRightLeft } from 'lucide-react'
 
 interface Props {
   item: StockItem
@@ -21,7 +21,6 @@ export default function ItemActions({ item, profile }: Props) {
   const [loading, setLoading] = useState(false)
   const [newDept, setNewDept] = useState<Dept | ''>('')
   const [note, setNote] = useState('')
-  const [sendEmail, setSendEmail] = useState(true)
   const router = useRouter()
   const supabase = createClient()
 
@@ -51,13 +50,11 @@ export default function ItemActions({ item, profile }: Props) {
       note,
     })
 
-    if (sendEmail) {
-      await fetch('/api/notify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ itemId: item.id, dept: newDept, note, assignedBy: profile?.full_name || profile?.email }),
-      })
-    }
+    await fetch('/api/notify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ itemId: item.id, dept: newDept, note, assignedBy: profile?.full_name || profile?.email }),
+    })
 
     setAssignOpen(false)
     setLoading(false)
@@ -164,17 +161,6 @@ export default function ItemActions({ item, profile }: Props) {
                 className="w-full border rounded-md px-3 py-2 text-sm min-h-[80px] focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
-
-            <label className="flex items-center gap-2 text-sm cursor-pointer">
-              <input
-                type="checkbox"
-                checked={sendEmail}
-                onChange={e => setSendEmail(e.target.checked)}
-                className="rounded"
-              />
-              <Send className="h-3.5 w-3.5 text-slate-400" />
-              Send email notification to department
-            </label>
 
             <div className="flex gap-2 justify-end">
               <Button type="button" variant="outline" onClick={() => setAssignOpen(false)}>Cancel</Button>
