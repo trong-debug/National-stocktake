@@ -16,6 +16,7 @@ import {
   Users,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import NotificationBell from '@/components/NotificationBell'
 
 interface SidebarProps {
   profile: Profile | null
@@ -101,13 +102,14 @@ export default function Sidebar({ profile }: SidebarProps) {
       {/* User footer */}
       <div className="px-4 py-4 border-t border-blue-800">
         <div className="flex items-center gap-2 mb-3">
-          <div className="w-7 h-7 rounded-full bg-blue-700 flex items-center justify-center text-xs font-bold uppercase">
+          <div className="w-7 h-7 rounded-full bg-blue-700 flex items-center justify-center text-xs font-bold uppercase shrink-0">
             {profile?.full_name?.[0] || profile?.email?.[0] || '?'}
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-xs font-medium truncate">{profile?.full_name || 'Staff'}</p>
             <p className="text-blue-400 text-xs truncate">{profile?.dept || profile?.branch || 'No dept set'}</p>
           </div>
+          {profile?.id && <NotificationBell userId={profile.id} />}
         </div>
         <Button
           variant="ghost"
