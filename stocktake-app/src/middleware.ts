@@ -31,7 +31,10 @@ export async function middleware(request: NextRequest) {
       },
     })
 
-    const { data: { user } } = await supabase.auth.getUser()
+    // getSession() reads from the cookie — no network call, so navigation is instant.
+    // Server components use getUser() for the actual security check.
+    const { data: { session } } = await supabase.auth.getSession()
+    const user = session?.user
 
     if (!user && !isLoginPage && !isAuthCallback && !isApiRoute) {
       const url = request.nextUrl.clone()
