@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  adapterPath: require.resolve('@next-community/adapter-vercel'),
 };
 
 export default nextConfig;
