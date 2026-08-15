@@ -16,7 +16,8 @@ interface Props {
   profile: Profile | null
 }
 
-export default function ItemActions({ item, profile }: Props) {
+export default function ItemActions({ item: initialItem, profile }: Props) {
+  const [item, setItem] = useState(initialItem)
   const [assignOpen, setAssignOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [newDept, setNewDept] = useState<Dept | ''>('')
@@ -29,9 +30,14 @@ export default function ItemActions({ item, profile }: Props) {
   async function handleAssign(e: React.FormEvent) {
     e.preventDefault()
     if (!newDept) return
-    setLoading(true)
 
     const noteField = `notes_${newDept.toLowerCase()}` as `notes_${'rp'|'cc'|'wh'|'dm'}`
+    const prevDept = item.dept_assigned
+
+    // Optimistic: close dialog and show new dept immediately
+    setItem(i => ({ ...i, dept_assigned: newDept as Dept }))
+    setAssignOpen(false)
+    setLoading(true)
 
     await supabase.from('stock_items').update({
       dept_assigned: newDept,
@@ -44,25 +50,28 @@ export default function ItemActions({ item, profile }: Props) {
       item_id: item.id,
       user_id: profile?.id,
       user_name: profile?.full_name || profile?.email,
-      action_type: item.dept_assigned ? 'transferred' : 'assigned',
-      from_dept: item.dept_assigned,
+      action_type: prevDept ? 'transferred' : 'assigned',
+      from_dept: prevDept,
       to_dept: newDept,
       note,
     })
 
-    await fetch('/api/notify', {
+    // Fire-and-forget — don't block UI on email
+    fetch('/api/notify', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ itemId: item.id, dept: newDept, note, assignedBy: profile?.full_name || profile?.email }),
     })
 
-    setAssignOpen(false)
     setLoading(false)
     router.refresh()
   }
 
   async function handleComplete() {
+    // Optimistic: flip to completed immediately
+    setItem(i => ({ ...i, status: 'completed', completed_at: new Date().toISOString() }))
     setLoading(true)
+
     await supabase.from('stock_items').update({
       status: 'completed',
       completed_at: new Date().toISOString(),
@@ -84,7 +93,10 @@ export default function ItemActions({ item, profile }: Props) {
   }
 
   async function handleReopen() {
+    // Optimistic: flip back to in_progress immediately
+    setItem(i => ({ ...i, status: 'in_progress', completed_at: null }))
     setLoading(true)
+
     await supabase.from('stock_items').update({
       status: 'in_progress',
       completed_at: null,

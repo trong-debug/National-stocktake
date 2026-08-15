@@ -71,7 +71,12 @@ export default function NewItemButton({ branch, profile }: Props) {
     }
 
     if (item) {
-      const { error: logError } = await supabase.from('action_logs').insert({
+      // Close immediately — don't make the user wait for the log insert or refresh
+      setOpen(false)
+      setLoading(false)
+
+      // Background: log the action then sync the page
+      supabase.from('action_logs').insert({
         item_id: item.id,
         user_id: profile?.id,
         user_name: profile?.full_name || profile?.email,
@@ -79,17 +84,23 @@ export default function NewItemButton({ branch, profile }: Props) {
         to_dept: form.dept_assigned || null,
         note: form.action_required || null,
         new_status: 'in_progress',
+      }).then(({ error: logError }) => {
+        if (logError) console.error('[NewItemButton] action_log error:', logError)
       })
-      if (logError) console.error('[NewItemButton] action_log error:', logError)
-      setOpen(false)
+
       router.refresh()
+      return
     }
     setLoading(false)
   }
 
   return (
     <>
-      <Button onClick={() => { setOpen(true); setSubmitError(null) }} className="bg-blue-800 hover:bg-blue-900">
+      <Button onClick={() => {
+        setForm({ date_listed: new Date().toISOString().split('T')[0], client: '', serial: '', tracking: '', customer_name: '', status_code: '', action_required: '', delivery_depot: '', dept_assigned: '' })
+        setSubmitError(null)
+        setOpen(true)
+      }} className="bg-blue-800 hover:bg-blue-900">
         <Plus className="h-4 w-4 mr-1.5" />
         New Item
       </Button>
