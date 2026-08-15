@@ -107,7 +107,9 @@ export default function Sidebar({ profile }: SidebarProps) {
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-xs font-medium truncate">{profile?.full_name || 'Staff'}</p>
-            <p className="text-blue-400 text-xs truncate">{profile?.dept || profile?.branch || 'No dept set'}</p>
+            <p className="text-blue-400 text-xs truncate">
+              {profile?.depts?.length ? profile.depts.join(', ') : profile?.dept || profile?.branch || 'No dept set'}
+            </p>
           </div>
           {profile?.id && <NotificationBell userId={profile.id} />}
         </div>

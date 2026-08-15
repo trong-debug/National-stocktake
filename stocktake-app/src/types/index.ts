@@ -18,6 +18,7 @@ export interface Profile {
   role: UserRole
   branch: Branch | 'ALL' | null
   dept: Dept | 'ADMIN' | null
+  depts: string[] | null
   created_at: string
 }
 
