@@ -1,73 +1,84 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
 
-  <!-- Dark navy outer band -->
+  <!-- Dark navy outer band (contains text) -->
   <circle cx="100" cy="100" r="99" fill="#0c2461"/>
 
-  <!-- Bright teal ring -->
-  <circle cx="100" cy="100" r="83" fill="#10b8de"/>
+  <!-- Vivid teal / cyan ring -->
+  <circle cx="100" cy="100" r="82" fill="#00b4d8"/>
 
-  <!-- White separating ring -->
-  <circle cx="100" cy="100" r="74" fill="white"/>
+  <!-- Thin white separator ring -->
+  <circle cx="100" cy="100" r="73" fill="white"/>
 
-  <!-- Light blue inner background -->
-  <circle cx="100" cy="100" r="70" fill="#9ed5f0"/>
+  <!-- Light sky-blue background ring -->
+  <circle cx="100" cy="100" r="68" fill="#7ecfe8"/>
 
-  <!-- Snowflake — 6 half-arms (rotated), each with 2 branch pairs -->
-  <g stroke="#0a6fab" stroke-linecap="round" fill="none">
+  <!-- White centre circle — snowflake sits on this -->
+  <circle cx="100" cy="100" r="57" fill="white"/>
+
+  <!-- Snowflake: 6 arms (centre-to-tip, rotated), each with 2 branch pairs -->
+  <!-- Arm length: 54px (tip at y=46). Branch 1 at y=68 (60%), Branch 2 at y=57 (80%) -->
+  <g stroke="#00b4d8" stroke-linecap="round" fill="none">
+
     <g>
-      <line x1="100" y1="100" x2="100" y2="32" stroke-width="10"/>
-      <line x1="100" y1="57"  x2="83"  y2="40" stroke-width="6"/>
-      <line x1="100" y1="57"  x2="117" y2="40" stroke-width="6"/>
-      <line x1="100" y1="74"  x2="87"  y2="61" stroke-width="5"/>
-      <line x1="100" y1="74"  x2="113" y2="61" stroke-width="5"/>
+      <line x1="100" y1="100" x2="100" y2="46" stroke-width="11"/>
+      <line x1="100" y1="68"  x2="83"  y2="51" stroke-width="7"/>
+      <line x1="100" y1="68"  x2="117" y2="51" stroke-width="7"/>
+      <line x1="100" y1="57"  x2="87"  y2="44" stroke-width="5"/>
+      <line x1="100" y1="57"  x2="113" y2="44" stroke-width="5"/>
     </g>
+
     <g transform="rotate(60 100 100)">
-      <line x1="100" y1="100" x2="100" y2="32" stroke-width="10"/>
-      <line x1="100" y1="57"  x2="83"  y2="40" stroke-width="6"/>
-      <line x1="100" y1="57"  x2="117" y2="40" stroke-width="6"/>
-      <line x1="100" y1="74"  x2="87"  y2="61" stroke-width="5"/>
-      <line x1="100" y1="74"  x2="113" y2="61" stroke-width="5"/>
+      <line x1="100" y1="100" x2="100" y2="46" stroke-width="11"/>
+      <line x1="100" y1="68"  x2="83"  y2="51" stroke-width="7"/>
+      <line x1="100" y1="68"  x2="117" y2="51" stroke-width="7"/>
+      <line x1="100" y1="57"  x2="87"  y2="44" stroke-width="5"/>
+      <line x1="100" y1="57"  x2="113" y2="44" stroke-width="5"/>
     </g>
+
     <g transform="rotate(120 100 100)">
-      <line x1="100" y1="100" x2="100" y2="32" stroke-width="10"/>
-      <line x1="100" y1="57"  x2="83"  y2="40" stroke-width="6"/>
-      <line x1="100" y1="57"  x2="117" y2="40" stroke-width="6"/>
-      <line x1="100" y1="74"  x2="87"  y2="61" stroke-width="5"/>
-      <line x1="100" y1="74"  x2="113" y2="61" stroke-width="5"/>
+      <line x1="100" y1="100" x2="100" y2="46" stroke-width="11"/>
+      <line x1="100" y1="68"  x2="83"  y2="51" stroke-width="7"/>
+      <line x1="100" y1="68"  x2="117" y2="51" stroke-width="7"/>
+      <line x1="100" y1="57"  x2="87"  y2="44" stroke-width="5"/>
+      <line x1="100" y1="57"  x2="113" y2="44" stroke-width="5"/>
     </g>
+
     <g transform="rotate(180 100 100)">
-      <line x1="100" y1="100" x2="100" y2="32" stroke-width="10"/>
-      <line x1="100" y1="57"  x2="83"  y2="40" stroke-width="6"/>
-      <line x1="100" y1="57"  x2="117" y2="40" stroke-width="6"/>
-      <line x1="100" y1="74"  x2="87"  y2="61" stroke-width="5"/>
-      <line x1="100" y1="74"  x2="113" y2="61" stroke-width="5"/>
+      <line x1="100" y1="100" x2="100" y2="46" stroke-width="11"/>
+      <line x1="100" y1="68"  x2="83"  y2="51" stroke-width="7"/>
+      <line x1="100" y1="68"  x2="117" y2="51" stroke-width="7"/>
+      <line x1="100" y1="57"  x2="87"  y2="44" stroke-width="5"/>
+      <line x1="100" y1="57"  x2="113" y2="44" stroke-width="5"/>
     </g>
+
     <g transform="rotate(240 100 100)">
-      <line x1="100" y1="100" x2="100" y2="32" stroke-width="10"/>
-      <line x1="100" y1="57"  x2="83"  y2="40" stroke-width="6"/>
-      <line x1="100" y1="57"  x2="117" y2="40" stroke-width="6"/>
-      <line x1="100" y1="74"  x2="87"  y2="61" stroke-width="5"/>
-      <line x1="100" y1="74"  x2="113" y2="61" stroke-width="5"/>
+      <line x1="100" y1="100" x2="100" y2="46" stroke-width="11"/>
+      <line x1="100" y1="68"  x2="83"  y2="51" stroke-width="7"/>
+      <line x1="100" y1="68"  x2="117" y2="51" stroke-width="7"/>
+      <line x1="100" y1="57"  x2="87"  y2="44" stroke-width="5"/>
+      <line x1="100" y1="57"  x2="113" y2="44" stroke-width="5"/>
     </g>
+
     <g transform="rotate(300 100 100)">
-      <line x1="100" y1="100" x2="100" y2="32" stroke-width="10"/>
-      <line x1="100" y1="57"  x2="83"  y2="40" stroke-width="6"/>
-      <line x1="100" y1="57"  x2="117" y2="40" stroke-width="6"/>
-      <line x1="100" y1="74"  x2="87"  y2="61" stroke-width="5"/>
-      <line x1="100" y1="74"  x2="113" y2="61" stroke-width="5"/>
+      <line x1="100" y1="100" x2="100" y2="46" stroke-width="11"/>
+      <line x1="100" y1="68"  x2="83"  y2="51" stroke-width="7"/>
+      <line x1="100" y1="68"  x2="117" y2="51" stroke-width="7"/>
+      <line x1="100" y1="57"  x2="87"  y2="44" stroke-width="5"/>
+      <line x1="100" y1="57"  x2="113" y2="44" stroke-width="5"/>
     </g>
+
   </g>
 
-  <!-- "BE COOL" curved text at top -->
-  <path id="topArc" d="M 19,100 A 81,81 0 0,1 181,100" fill="none"/>
+  <!-- "BE COOL" curved text at top — sits in the navy band -->
+  <path id="topArc" d="M 18,100 A 82,82 0 0,1 182,100" fill="none"/>
   <text fill="white" font-family="Arial,Helvetica,sans-serif" font-weight="bold" font-size="17" letter-spacing="5">
-    <textPath href="#topArc" startOffset="15%">BE COOL</textPath>
+    <textPath href="#topArc" startOffset="14%">BE COOL</textPath>
   </text>
 
-  <!-- "REFRIGERATED COURIERS" curved text at bottom -->
-  <path id="botArc" d="M 16,102 A 84,84 0 0,0 184,102" fill="none"/>
-  <text fill="white" font-family="Arial,Helvetica,sans-serif" font-weight="bold" font-size="10" letter-spacing="1.2">
-    <textPath href="#botArc" startOffset="6%">REFRIGERATED COURIERS</textPath>
+  <!-- "REFRIGERATED COURIERS" curved text at bottom — sits in the navy band -->
+  <path id="botArc" d="M 15,101 A 85,85 0 0,0 185,101" fill="none"/>
+  <text fill="white" font-family="Arial,Helvetica,sans-serif" font-weight="bold" font-size="10" letter-spacing="1.3">
+    <textPath href="#botArc" startOffset="5.5%">REFRIGERATED COURIERS</textPath>
   </text>
 
 </svg>
