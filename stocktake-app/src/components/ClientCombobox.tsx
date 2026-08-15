@@ -14,9 +14,9 @@ export default function ClientCombobox({ value, onChange, clients, placeholder, 
   const [open, setOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
-  const filtered = clients
-    .filter(c => !value || c.toLowerCase().includes(value.toLowerCase()))
-    .slice(0, 15)
+  const filtered = value
+    ? clients.filter(c => c.toLowerCase().includes(value.toLowerCase()))
+    : clients.slice(0, 100)
 
   useEffect(() => {
     function onClickOutside(e: MouseEvent) {
@@ -39,7 +39,7 @@ export default function ClientCombobox({ value, onChange, clients, placeholder, 
         className="w-full border border-input rounded-md px-3 h-9 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-background"
       />
       {open && filtered.length > 0 && (
-        <ul className="absolute z-50 w-full mt-1 bg-white border rounded-md shadow-lg max-h-52 overflow-y-auto">
+        <ul className="absolute z-50 w-full mt-1 bg-white border rounded-md shadow-lg max-h-72 overflow-y-auto">
           {filtered.map(c => (
             <li
               key={c}
