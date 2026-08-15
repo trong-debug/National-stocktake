@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { createClient } from '@/lib/supabase/server'
 import { BRANCH_MAP, DEPT_MAP } from '@/lib/constants'
 import type { Branch, StockItem } from '@/types'

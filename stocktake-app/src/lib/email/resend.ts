@@ -2,7 +2,7 @@ import { Resend } from 'resend'
 import type { Dept, Branch, StockItem } from '@/types'
 import { DEPT_MAP, BRANCH_MAP } from '@/lib/constants'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+const getResend = () => new Resend(process.env.RESEND_API_KEY || 're_placeholder')
 
 const FROM_EMAIL = 'stocktake@becoolcouriers.com.au'
 
@@ -57,7 +57,7 @@ export async function sendDeptNotification(
     </div>
   `
 
-  return resend.emails.send({
+  return getResend().emails.send({
     from: FROM_EMAIL,
     to: [deptInfo.email],
     subject: `[${item.branch}] Action Required — ${item.client || item.tracking || item.serial || 'Item'}`,
@@ -109,7 +109,7 @@ export async function sendBulkDeptDigest(
     </div>
   `
 
-  return resend.emails.send({
+  return getResend().emails.send({
     from: FROM_EMAIL,
     to: [deptInfo.email],
     subject: `[Stocktake Digest] ${items.length} pending item${items.length !== 1 ? 's' : ''} for ${deptInfo.label}`,
