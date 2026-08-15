@@ -105,6 +105,9 @@ create policy "Authenticated users can insert items"
 create policy "Authenticated users can update items"
   on public.stock_items for update using (auth.role() = 'authenticated');
 
+create policy "Authenticated users can delete items"
+  on public.stock_items for delete using (auth.role() = 'authenticated');
+
 -- Useful indexes
 create index if not exists idx_stock_items_branch  on public.stock_items (branch);
 create index if not exists idx_stock_items_status  on public.stock_items (status);

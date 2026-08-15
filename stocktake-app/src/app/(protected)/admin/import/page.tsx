@@ -139,7 +139,9 @@ export default function ImportPage() {
     reader.onload = async e => {
       const text = e.target?.result as string
       const rows = parseCSV(text)
-      const mapped = rows.map(r => mapRow(r, branch as Branch))
+      const mapped = rows
+        .map(r => mapRow(r, branch as Branch))
+        .filter(r => r.client || r.serial || r.tracking || r.customer_name || r.action_required)
 
       const BATCH = 200
       let imported = 0, errors = 0
