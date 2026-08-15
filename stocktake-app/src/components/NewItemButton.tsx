@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import type { Branch, Dept, Profile } from '@/types'
-import { DEPTS, STATUS_CODES } from '@/lib/constants'
+import { DEPTS } from '@/lib/constants'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
@@ -12,6 +12,7 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import ClientCombobox from '@/components/ClientCombobox'
 import DeliveryDepotCombobox from '@/components/DeliveryDepotCombobox'
+import StatusCodeCombobox from '@/components/StatusCodeCombobox'
 import { Plus } from 'lucide-react'
 
 interface Props {
@@ -160,16 +161,7 @@ export default function NewItemButton({ branch, profile }: Props) {
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
                 <Label className="text-xs">Status Code</Label>
-                <Select value={form.status_code} onValueChange={v => set('status_code', v ?? '')}>
-                  <SelectTrigger className="h-9 text-sm"><SelectValue placeholder="Select code" /></SelectTrigger>
-                  <SelectContent className="max-h-60">
-                    {STATUS_CODES.map(s => (
-                      <SelectItem key={s.code} value={s.code}>
-                        <span className="font-mono font-semibold">{s.code}</span> — {s.description}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <StatusCodeCombobox value={form.status_code} onChange={v => set('status_code', v)} />
               </div>
               <div className="space-y-1">
                 <Label className="text-xs">Assign to Department</Label>
