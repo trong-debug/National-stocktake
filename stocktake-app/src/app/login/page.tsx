@@ -9,37 +9,59 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
+type Mode = 'link' | 'password'
+
 export default function LoginPage() {
   const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [mode, setMode] = useState<Mode>('link')
   const [loading, setLoading] = useState(false)
   const [sent, setSent] = useState(false)
   const [error, setError] = useState('')
 
+  const supabase = createClient()
+
+  function validateEmail(e: string) {
+    if (!e.endsWith('@becoolcouriers.com.au')) {
+      setError('Only @becoolcouriers.com.au accounts can access this system.')
+      return false
+    }
+    return true
+  }
+
   async function handleSendLink(e: React.FormEvent) {
     e.preventDefault()
     setError('')
-
-    if (!email.endsWith('@becoolcouriers.com.au')) {
-      setError('Only @becoolcouriers.com.au accounts can access this system.')
-      return
-    }
-
+    if (!validateEmail(email)) return
     setLoading(true)
-    const supabase = createClient()
+
     const { error: err } = await supabase.auth.signInWithOtp({
       email,
-      options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
-      },
+      options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
     })
 
-    if (err) {
-      setError(err.message)
-      setLoading(false)
-    } else {
-      setSent(true)
-      setLoading(false)
-    }
+    if (err) setError(err.message)
+    else setSent(true)
+    setLoading(false)
+  }
+
+  async function handlePasswordLogin(e: React.FormEvent) {
+    e.preventDefault()
+    setError('')
+    if (!validateEmail(email)) return
+    setLoading(true)
+
+    const { error: err } = await supabase.auth.signInWithPassword({ email, password })
+
+    if (err) setError(err.message)
+    // on success middleware redirects automatically
+    setLoading(false)
+  }
+
+  function switchMode(m: Mode) {
+    setMode(m)
+    setError('')
+    setPassword('')
   }
 
   return (
@@ -73,32 +95,67 @@ export default function LoginPage() {
               </button>
             </div>
           ) : (
-            <form onSubmit={handleSendLink} className="space-y-4">
-              <div className="space-y-1.5">
-                <Label className="text-sm">Email address</Label>
-                <Input
-                  type="email"
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  placeholder="you@becoolcouriers.com.au"
-                  required
-                  autoFocus
-                />
+            <>
+              {/* Mode toggle */}
+              <div className="flex rounded-lg border p-1 mb-4 gap-1">
+                <button
+                  type="button"
+                  onClick={() => switchMode('link')}
+                  className={`flex-1 text-xs py-1.5 rounded-md transition-colors ${mode === 'link' ? 'bg-blue-800 text-white font-medium' : 'text-slate-500 hover:text-slate-700'}`}
+                >
+                  Email Link
+                </button>
+                <button
+                  type="button"
+                  onClick={() => switchMode('password')}
+                  className={`flex-1 text-xs py-1.5 rounded-md transition-colors ${mode === 'password' ? 'bg-blue-800 text-white font-medium' : 'text-slate-500 hover:text-slate-700'}`}
+                >
+                  Password
+                </button>
               </div>
-              {error && (
-                <p className="text-xs text-red-600 bg-red-50 rounded px-3 py-2">{error}</p>
-              )}
-              <Button
-                type="submit"
-                className="w-full bg-blue-800 hover:bg-blue-900"
-                disabled={loading || !email}
-              >
-                {loading ? 'Sending…' : 'Send Login Link'}
-              </Button>
-              <p className="text-center text-xs text-slate-500">
-                Only @becoolcouriers.com.au accounts can access this system.
-              </p>
-            </form>
+
+              <form onSubmit={mode === 'link' ? handleSendLink : handlePasswordLogin} className="space-y-4">
+                <div className="space-y-1.5">
+                  <Label className="text-sm">Email address</Label>
+                  <Input
+                    type="email"
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
+                    placeholder="you@becoolcouriers.com.au"
+                    required
+                    autoFocus
+                  />
+                </div>
+
+                {mode === 'password' && (
+                  <div className="space-y-1.5">
+                    <Label className="text-sm">Password</Label>
+                    <Input
+                      type="password"
+                      value={password}
+                      onChange={e => setPassword(e.target.value)}
+                      placeholder="Your password"
+                      required
+                    />
+                  </div>
+                )}
+
+                {error && (
+                  <p className="text-xs text-red-600 bg-red-50 rounded px-3 py-2">{error}</p>
+                )}
+
+                <Button
+                  type="submit"
+                  className="w-full bg-blue-800 hover:bg-blue-900"
+                  disabled={loading || !email || (mode === 'password' && !password)}
+                >
+                  {loading ? 'Signing in…' : mode === 'link' ? 'Send Login Link' : 'Sign In'}
+                </Button>
+                <p className="text-center text-xs text-slate-500">
+                  Only @becoolcouriers.com.au accounts can access this system.
+                </p>
+              </form>
+            </>
           )}
         </CardContent>
       </Card>
