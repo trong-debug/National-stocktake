@@ -4,6 +4,7 @@ export const dynamic = 'force-dynamic'
 
 import { createClient } from '@/lib/supabase/client'
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -20,6 +21,7 @@ export default function LoginPage() {
   const [error, setError] = useState('')
 
   const supabase = createClient()
+  const router = useRouter()
 
   function validateEmail(e: string) {
     if (!e.endsWith('@becoolcouriers.com.au')) {
@@ -53,9 +55,13 @@ export default function LoginPage() {
 
     const { error: err } = await supabase.auth.signInWithPassword({ email, password })
 
-    if (err) setError(err.message)
-    // on success middleware redirects automatically
-    setLoading(false)
+    if (err) {
+      setError(err.message)
+      setLoading(false)
+    } else {
+      router.push('/')
+      router.refresh()
+    }
   }
 
   function switchMode(m: Mode) {
