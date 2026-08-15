@@ -13,21 +13,12 @@ interface Props {
   currentUserId: string
 }
 
-const ALL_DEPTS = [
-  { value: 'RP', label: 'Route Planners' },
-  { value: 'CC', label: 'Customer Care' },
-  { value: 'WH', label: 'Warehouse' },
-  { value: 'DM', label: 'Driver Mgmt' },
-  { value: 'ADMIN', label: 'Admin' },
+const DEPTS = [
+  { value: 'RP', label: 'Route Planners',  color: 'bg-blue-600 text-white border-blue-600' },
+  { value: 'CC', label: 'Customer Care',   color: 'bg-purple-600 text-white border-purple-600' },
+  { value: 'WH', label: 'Warehouse',       color: 'bg-amber-500 text-white border-amber-500' },
+  { value: 'DM', label: 'Driver Mgmt',     color: 'bg-green-600 text-white border-green-600' },
 ]
-
-const DEPT_COLORS: Record<string, string> = {
-  RP:    'bg-blue-600 text-white border-blue-600',
-  CC:    'bg-purple-600 text-white border-purple-600',
-  WH:    'bg-amber-500 text-white border-amber-500',
-  DM:    'bg-green-600 text-white border-green-600',
-  ADMIN: 'bg-slate-700 text-white border-slate-700',
-}
 
 export default function AdminUserList({ users, currentUserId }: Props) {
   const [saving, setSaving] = useState<string | null>(null)
@@ -46,7 +37,6 @@ export default function AdminUserList({ users, currentUserId }: Props) {
     const next = current.includes(dept)
       ? current.filter(d => d !== dept)
       : [...current, dept]
-    if (next.length > 7) return
     setSaving(user.id)
     await supabase.from('profiles').update({ depts: next }).eq('id', user.id)
     setSaving(null)
@@ -60,17 +50,17 @@ export default function AdminUserList({ users, currentUserId }: Props) {
         const isSelf = user.id === currentUserId
 
         return (
-          <div key={user.id} className="px-4 py-4 flex flex-col gap-3">
-            {/* Row 1: avatar + name + role + branch */}
+          <div key={user.id} className="px-5 py-4 flex flex-col gap-4">
+
+            {/* User header */}
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-800 flex items-center justify-center text-xs font-bold uppercase shrink-0">
+              <div className="w-9 h-9 rounded-full bg-blue-100 text-blue-800 flex items-center justify-center text-sm font-bold uppercase shrink-0">
                 {user.full_name?.[0] || user.email[0]}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">{user.full_name || '—'}</p>
+                <p className="text-sm font-semibold truncate">{user.full_name || '—'}</p>
                 <p className="text-xs text-slate-500 truncate">{user.email}</p>
               </div>
-
               <Select
                 value={user.role}
                 onValueChange={v => updateField(user.id, 'role', v ?? null)}
@@ -84,31 +74,36 @@ export default function AdminUserList({ users, currentUserId }: Props) {
                   <SelectItem value="admin">Admin</SelectItem>
                 </SelectContent>
               </Select>
+              {saving === user.id && (
+                <span className="text-xs text-slate-400 animate-pulse shrink-0">Saving…</span>
+              )}
+            </div>
 
+            {/* Section 1: Branch */}
+            <div className="flex items-center gap-3 pl-12">
+              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide w-24 shrink-0">Branch</span>
               <Select
                 value={user.branch || ''}
                 onValueChange={v => updateField(user.id, 'branch', v ?? null)}
                 disabled={saving === user.id}
               >
-                <SelectTrigger className="h-8 w-32 text-xs">
-                  <SelectValue placeholder="Branch" />
+                <SelectTrigger className="h-8 w-44 text-xs">
+                  <SelectValue placeholder="Select branch…" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="ALL">All branches</SelectItem>
-                  {BRANCHES.map(b => <SelectItem key={b.value} value={b.value}>{b.value}</SelectItem>)}
+                  {BRANCHES.map(b => (
+                    <SelectItem key={b.value} value={b.value}>{b.label} ({b.value})</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
-
-              {saving === user.id && (
-                <span className="text-xs text-slate-400 animate-pulse">Saving…</span>
-              )}
             </div>
 
-            {/* Row 2: dept checkboxes */}
-            <div className="flex items-center gap-2 pl-11">
-              <span className="text-xs text-slate-400 shrink-0">Departments:</span>
-              <div className="flex flex-wrap gap-1.5">
-                {ALL_DEPTS.map(d => {
+            {/* Section 2: Departments */}
+            <div className="flex items-start gap-3 pl-12">
+              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide w-24 shrink-0 pt-1">Departments</span>
+              <div className="flex flex-wrap gap-2">
+                {DEPTS.map(d => {
                   const active = assignedDepts.includes(d.value)
                   return (
                     <button
@@ -117,22 +112,25 @@ export default function AdminUserList({ users, currentUserId }: Props) {
                       disabled={saving === user.id}
                       title={d.label}
                       className={cn(
-                        'text-xs px-2.5 py-1 rounded-md border font-medium transition-colors',
+                        'text-xs px-3 py-1.5 rounded-md border font-medium transition-colors',
                         active
-                          ? DEPT_COLORS[d.value]
+                          ? d.color
                           : 'bg-white text-slate-500 border-slate-300 hover:border-slate-400'
                       )}
                     >
                       {d.value}
+                      <span className={cn('ml-1.5 font-normal', active ? 'opacity-80' : 'text-slate-400')}>
+                        {d.label}
+                      </span>
                     </button>
                   )
                 })}
                 {assignedDepts.length === 0 && (
-                  <span className="text-xs text-slate-400 italic">No departments assigned</span>
+                  <span className="text-xs text-slate-400 italic pt-1">None — user won't receive notifications</span>
                 )}
               </div>
-              <span className="text-xs text-slate-300 ml-auto">{assignedDepts.length}/7</span>
             </div>
+
           </div>
         )
       })}
