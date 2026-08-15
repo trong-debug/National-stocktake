@@ -13,6 +13,7 @@ import {
   Upload,
   ChevronRight,
   Package,
+  Users,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
@@ -80,6 +81,12 @@ export default function Sidebar({ profile }: SidebarProps) {
               icon={<Settings className="h-4 w-4" />}
               label="Admin Panel"
               active={pathname === '/admin'}
+            />
+            <NavItem
+              href="/admin/clients"
+              icon={<Users className="h-4 w-4" />}
+              label="Clients"
+              active={pathname === '/admin/clients'}
             />
             <NavItem
               href="/admin/import"

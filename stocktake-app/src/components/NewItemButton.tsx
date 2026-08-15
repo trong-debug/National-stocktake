@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import type { Branch, Dept, Profile } from '@/types'
@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import ClientCombobox from '@/components/ClientCombobox'
 import { Plus } from 'lucide-react'
 
 interface Props {
@@ -21,8 +22,14 @@ export default function NewItemButton({ branch, profile }: Props) {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
+  const [clientList, setClientList] = useState<string[]>([])
   const router = useRouter()
   const supabase = createClient()
+
+  useEffect(() => {
+    supabase.from('clients').select('name').eq('active', true).order('name')
+      .then(({ data }) => { if (data) setClientList(data.map(r => r.name)) })
+  }, [])
 
   const [form, setForm] = useState({
     date_listed: new Date().toISOString().split('T')[0],
@@ -124,7 +131,13 @@ export default function NewItemButton({ branch, profile }: Props) {
 
             <div className="space-y-1">
               <Label className="text-xs">Client <span className="text-red-500">*</span></Label>
-              <Input value={form.client} onChange={e => set('client', e.target.value)} required placeholder="Client name" className="h-9 text-sm" />
+              <ClientCombobox
+                value={form.client}
+                onChange={v => set('client', v)}
+                clients={clientList}
+                placeholder="Type or select client"
+                required
+              />
             </div>
 
             <div className="grid grid-cols-2 gap-3">

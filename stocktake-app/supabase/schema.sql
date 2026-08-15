@@ -27,6 +27,28 @@ create policy "Admins can update any profile"
     exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
   );
 
+-- ── Clients ──────────────────────────────────────────────────
+create table if not exists public.clients (
+  id         uuid default gen_random_uuid() primary key,
+  name       text not null unique,
+  active     boolean not null default true,
+  created_at timestamptz default now()
+);
+
+alter table public.clients enable row level security;
+
+create policy "Authenticated users can read clients"
+  on public.clients for select using (auth.role() = 'authenticated');
+
+create policy "Authenticated users can insert clients"
+  on public.clients for insert with check (auth.role() = 'authenticated');
+
+create policy "Authenticated users can update clients"
+  on public.clients for update using (auth.role() = 'authenticated');
+
+create policy "Authenticated users can delete clients"
+  on public.clients for delete using (auth.role() = 'authenticated');
+
 -- ── Status codes ─────────────────────────────────────────────
 create table if not exists public.status_codes (
   code        text primary key,
@@ -182,6 +204,7 @@ on conflict (code) do nothing;
 -- ── Table-level grants ───────────────────────────────────────
 -- Required when schema is applied via SQL editor (not Supabase dashboard UI).
 -- RLS policies alone are not enough; the role also needs table-level privileges.
+grant select, insert, update, delete on table public.clients      to authenticated;
 grant select, insert, update, delete on table public.stock_items  to authenticated;
 grant select, insert                  on table public.action_logs  to authenticated;
 grant select                          on table public.status_codes to authenticated;
