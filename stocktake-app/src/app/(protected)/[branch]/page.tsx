@@ -7,6 +7,7 @@ import { notFound } from 'next/navigation'
 import BranchTable from '@/components/BranchTable'
 import NewItemButton from '@/components/NewItemButton'
 import ClearBranchButton from '@/components/ClearBranchButton'
+import ExportCSVButton from '@/components/ExportCSVButton'
 
 const VALID_BRANCHES = ['PER', 'ADL', 'QLD', 'VIC', 'CBR', 'NSW', 'NTL']
 
@@ -66,6 +67,7 @@ export default async function BranchPage({ params, searchParams }: PageProps) {
           </p>
         </div>
         <div className="flex items-center gap-2">
+          {count != null && count > 0 && <ExportCSVButton branch={branch} />}
           {profile?.role === 'admin' && count != null && count > 0 && (
             <ClearBranchButton branch={branch} totalCount={count} />
           )}
