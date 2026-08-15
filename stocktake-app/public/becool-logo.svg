@@ -1,73 +1,73 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
-  <defs>
-    <radialGradient id="bg" cx="42%" cy="38%" r="62%">
-      <stop offset="0%" stop-color="#5dd5f2"/>
-      <stop offset="55%" stop-color="#1da8d4"/>
-      <stop offset="100%" stop-color="#0a6e9e"/>
-    </radialGradient>
-  </defs>
 
-  <!-- Outer dark navy ring -->
-  <circle cx="100" cy="100" r="99" fill="#1b3d6c"/>
-  <!-- Outer white ring -->
-  <circle cx="100" cy="100" r="91" fill="none" stroke="white" stroke-width="2.5"/>
-  <!-- Blue gradient fill -->
-  <circle cx="100" cy="100" r="88" fill="url(#bg)"/>
-  <!-- Inner white ring -->
-  <circle cx="100" cy="100" r="71" fill="none" stroke="white" stroke-width="2.5"/>
+  <!-- Dark navy outer band -->
+  <circle cx="100" cy="100" r="99" fill="#0c2461"/>
 
-  <!-- Snowflake — 6 arms via rotation -->
-  <g stroke="white" stroke-linecap="round" fill="none">
-    <!-- 3 main axes (60° apart gives 6-point) -->
-    <g stroke-width="10">
-      <line x1="100" y1="38" x2="100" y2="162"/>
-      <line x1="100" y1="38" x2="100" y2="162" transform="rotate(60 100 100)"/>
-      <line x1="100" y1="38" x2="100" y2="162" transform="rotate(120 100 100)"/>
+  <!-- Bright teal ring -->
+  <circle cx="100" cy="100" r="83" fill="#10b8de"/>
+
+  <!-- White separating ring -->
+  <circle cx="100" cy="100" r="74" fill="white"/>
+
+  <!-- Light blue inner background -->
+  <circle cx="100" cy="100" r="70" fill="#9ed5f0"/>
+
+  <!-- Snowflake — 6 half-arms (rotated), each with 2 branch pairs -->
+  <g stroke="#0a6fab" stroke-linecap="round" fill="none">
+    <g>
+      <line x1="100" y1="100" x2="100" y2="32" stroke-width="10"/>
+      <line x1="100" y1="57"  x2="83"  y2="40" stroke-width="6"/>
+      <line x1="100" y1="57"  x2="117" y2="40" stroke-width="6"/>
+      <line x1="100" y1="74"  x2="87"  y2="61" stroke-width="5"/>
+      <line x1="100" y1="74"  x2="113" y2="61" stroke-width="5"/>
     </g>
-    <!-- Upper inner branches -->
-    <g stroke-width="5">
-      <line x1="100" y1="62" x2="83"  y2="45" />
-      <line x1="100" y1="62" x2="117" y2="45" />
-      <line x1="100" y1="62" x2="83"  y2="45"  transform="rotate(60 100 100)"/>
-      <line x1="100" y1="62" x2="117" y2="45"  transform="rotate(60 100 100)"/>
-      <line x1="100" y1="62" x2="83"  y2="45"  transform="rotate(120 100 100)"/>
-      <line x1="100" y1="62" x2="117" y2="45"  transform="rotate(120 100 100)"/>
+    <g transform="rotate(60 100 100)">
+      <line x1="100" y1="100" x2="100" y2="32" stroke-width="10"/>
+      <line x1="100" y1="57"  x2="83"  y2="40" stroke-width="6"/>
+      <line x1="100" y1="57"  x2="117" y2="40" stroke-width="6"/>
+      <line x1="100" y1="74"  x2="87"  y2="61" stroke-width="5"/>
+      <line x1="100" y1="74"  x2="113" y2="61" stroke-width="5"/>
     </g>
-    <!-- Lower inner branches -->
-    <g stroke-width="5">
-      <line x1="100" y1="138" x2="83"  y2="155"/>
-      <line x1="100" y1="138" x2="117" y2="155"/>
-      <line x1="100" y1="138" x2="83"  y2="155" transform="rotate(60 100 100)"/>
-      <line x1="100" y1="138" x2="117" y2="155" transform="rotate(60 100 100)"/>
-      <line x1="100" y1="138" x2="83"  y2="155" transform="rotate(120 100 100)"/>
-      <line x1="100" y1="138" x2="117" y2="155" transform="rotate(120 100 100)"/>
+    <g transform="rotate(120 100 100)">
+      <line x1="100" y1="100" x2="100" y2="32" stroke-width="10"/>
+      <line x1="100" y1="57"  x2="83"  y2="40" stroke-width="6"/>
+      <line x1="100" y1="57"  x2="117" y2="40" stroke-width="6"/>
+      <line x1="100" y1="74"  x2="87"  y2="61" stroke-width="5"/>
+      <line x1="100" y1="74"  x2="113" y2="61" stroke-width="5"/>
     </g>
-    <!-- Mid branches -->
-    <g stroke-width="4">
-      <line x1="100" y1="78" x2="86"  y2="64" />
-      <line x1="100" y1="78" x2="114" y2="64" />
-      <line x1="100" y1="78" x2="86"  y2="64"  transform="rotate(60 100 100)"/>
-      <line x1="100" y1="78" x2="114" y2="64"  transform="rotate(60 100 100)"/>
-      <line x1="100" y1="78" x2="86"  y2="64"  transform="rotate(120 100 100)"/>
-      <line x1="100" y1="78" x2="114" y2="64"  transform="rotate(120 100 100)"/>
-      <line x1="100" y1="122" x2="86"  y2="136"/>
-      <line x1="100" y1="122" x2="114" y2="136"/>
-      <line x1="100" y1="122" x2="86"  y2="136" transform="rotate(60 100 100)"/>
-      <line x1="100" y1="122" x2="114" y2="136" transform="rotate(60 100 100)"/>
-      <line x1="100" y1="122" x2="86"  y2="136" transform="rotate(120 100 100)"/>
-      <line x1="100" y1="122" x2="114" y2="136" transform="rotate(120 100 100)"/>
+    <g transform="rotate(180 100 100)">
+      <line x1="100" y1="100" x2="100" y2="32" stroke-width="10"/>
+      <line x1="100" y1="57"  x2="83"  y2="40" stroke-width="6"/>
+      <line x1="100" y1="57"  x2="117" y2="40" stroke-width="6"/>
+      <line x1="100" y1="74"  x2="87"  y2="61" stroke-width="5"/>
+      <line x1="100" y1="74"  x2="113" y2="61" stroke-width="5"/>
+    </g>
+    <g transform="rotate(240 100 100)">
+      <line x1="100" y1="100" x2="100" y2="32" stroke-width="10"/>
+      <line x1="100" y1="57"  x2="83"  y2="40" stroke-width="6"/>
+      <line x1="100" y1="57"  x2="117" y2="40" stroke-width="6"/>
+      <line x1="100" y1="74"  x2="87"  y2="61" stroke-width="5"/>
+      <line x1="100" y1="74"  x2="113" y2="61" stroke-width="5"/>
+    </g>
+    <g transform="rotate(300 100 100)">
+      <line x1="100" y1="100" x2="100" y2="32" stroke-width="10"/>
+      <line x1="100" y1="57"  x2="83"  y2="40" stroke-width="6"/>
+      <line x1="100" y1="57"  x2="117" y2="40" stroke-width="6"/>
+      <line x1="100" y1="74"  x2="87"  y2="61" stroke-width="5"/>
+      <line x1="100" y1="74"  x2="113" y2="61" stroke-width="5"/>
     </g>
   </g>
 
   <!-- "BE COOL" curved text at top -->
-  <path id="topArc" d="M 20,105 A 80,80 0 0,1 180,105" fill="none"/>
+  <path id="topArc" d="M 19,100 A 81,81 0 0,1 181,100" fill="none"/>
   <text fill="white" font-family="Arial,Helvetica,sans-serif" font-weight="bold" font-size="17" letter-spacing="5">
-    <textPath href="#topArc" startOffset="16%">BE COOL</textPath>
+    <textPath href="#topArc" startOffset="15%">BE COOL</textPath>
   </text>
 
   <!-- "REFRIGERATED COURIERS" curved text at bottom -->
-  <path id="botArc" d="M 16,96 A 84,84 0 0,0 184,96" fill="none"/>
-  <text fill="white" font-family="Arial,Helvetica,sans-serif" font-weight="bold" font-size="10.5" letter-spacing="1.2">
+  <path id="botArc" d="M 16,102 A 84,84 0 0,0 184,102" fill="none"/>
+  <text fill="white" font-family="Arial,Helvetica,sans-serif" font-weight="bold" font-size="10" letter-spacing="1.2">
     <textPath href="#botArc" startOffset="6%">REFRIGERATED COURIERS</textPath>
   </text>
+
 </svg>

@@ -14,31 +14,41 @@ interface Props {
 }
 
 const DEPTS = [
-  { value: 'RP', label: 'Route Planners',  color: 'bg-blue-600 text-white border-blue-600' },
-  { value: 'CC', label: 'Customer Care',   color: 'bg-purple-600 text-white border-purple-600' },
-  { value: 'WH', label: 'Warehouse',       color: 'bg-amber-500 text-white border-amber-500' },
-  { value: 'DM', label: 'Driver Mgmt',     color: 'bg-green-600 text-white border-green-600' },
+  { value: 'RP', label: 'Route Planners', color: 'bg-blue-600 text-white border-blue-600' },
+  { value: 'CC', label: 'Customer Care',  color: 'bg-purple-600 text-white border-purple-600' },
+  { value: 'WH', label: 'Warehouse',      color: 'bg-amber-500 text-white border-amber-500' },
+  { value: 'DM', label: 'Driver Mgmt',    color: 'bg-green-600 text-white border-green-600' },
 ]
+
+const BRANCH_COLORS: Record<string, string> = {
+  NSW: 'bg-red-600 text-white border-red-600',
+  QLD: 'bg-orange-500 text-white border-orange-500',
+  VIC: 'bg-blue-700 text-white border-blue-700',
+  ADL: 'bg-emerald-600 text-white border-emerald-600',
+  PER: 'bg-yellow-500 text-white border-yellow-500',
+  CBR: 'bg-teal-600 text-white border-teal-600',
+  NTL: 'bg-slate-500 text-white border-slate-500',
+}
 
 export default function AdminUserList({ users, currentUserId }: Props) {
   const [saving, setSaving] = useState<string | null>(null)
   const supabase = createClient()
   const router = useRouter()
 
-  async function updateField(id: string, field: string, value: string | null) {
+  async function updateRole(id: string, value: string | null) {
     setSaving(id)
-    await supabase.from('profiles').update({ [field]: value || null }).eq('id', id)
+    await supabase.from('profiles').update({ role: value || null }).eq('id', id)
     setSaving(null)
     router.refresh()
   }
 
-  async function toggleDept(user: Profile, dept: string) {
-    const current = user.depts || []
-    const next = current.includes(dept)
-      ? current.filter(d => d !== dept)
-      : [...current, dept]
+  async function toggleItem(user: Profile, field: 'depts' | 'branches', item: string) {
+    const current: string[] = (user[field] as string[] | null) || []
+    const next = current.includes(item)
+      ? current.filter(d => d !== item)
+      : [...current, item]
     setSaving(user.id)
-    await supabase.from('profiles').update({ depts: next }).eq('id', user.id)
+    await supabase.from('profiles').update({ [field]: next }).eq('id', user.id)
     setSaving(null)
     router.refresh()
   }
@@ -46,11 +56,12 @@ export default function AdminUserList({ users, currentUserId }: Props) {
   return (
     <div className="divide-y">
       {users.map(user => {
-        const assignedDepts = user.depts || []
+        const assignedDepts    = user.depts    || []
+        const assignedBranches = user.branches || []
         const isSelf = user.id === currentUserId
 
         return (
-          <div key={user.id} className="px-5 py-4 flex flex-col gap-4">
+          <div key={user.id} className="px-5 py-5 flex flex-col gap-4">
 
             {/* User header */}
             <div className="flex items-center gap-3">
@@ -63,7 +74,7 @@ export default function AdminUserList({ users, currentUserId }: Props) {
               </div>
               <Select
                 value={user.role}
-                onValueChange={v => updateField(user.id, 'role', v ?? null)}
+                onValueChange={v => updateRole(user.id, v ?? null)}
                 disabled={saving === user.id || isSelf}
               >
                 <SelectTrigger className="h-8 w-24 text-xs">
@@ -79,24 +90,33 @@ export default function AdminUserList({ users, currentUserId }: Props) {
               )}
             </div>
 
-            {/* Section 1: Branch */}
-            <div className="flex items-center gap-3 pl-12">
-              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide w-24 shrink-0">Branch</span>
-              <Select
-                value={user.branch || ''}
-                onValueChange={v => updateField(user.id, 'branch', v ?? null)}
-                disabled={saving === user.id}
-              >
-                <SelectTrigger className="h-8 w-44 text-xs">
-                  <SelectValue placeholder="Select branch…" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ALL">All branches</SelectItem>
-                  {BRANCHES.map(b => (
-                    <SelectItem key={b.value} value={b.value}>{b.label} ({b.value})</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            {/* Section 1: Branches */}
+            <div className="flex items-start gap-3 pl-12">
+              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide w-24 shrink-0 pt-1">Branches</span>
+              <div className="flex flex-wrap gap-2">
+                {BRANCHES.map(b => {
+                  const active = assignedBranches.includes(b.value)
+                  return (
+                    <button
+                      key={b.value}
+                      onClick={() => toggleItem(user, 'branches', b.value)}
+                      disabled={saving === user.id}
+                      title={b.label}
+                      className={cn(
+                        'text-xs px-3 py-1.5 rounded-md border font-medium transition-colors',
+                        active
+                          ? BRANCH_COLORS[b.value]
+                          : 'bg-white text-slate-500 border-slate-300 hover:border-slate-400'
+                      )}
+                    >
+                      {b.value}
+                    </button>
+                  )
+                })}
+                {assignedBranches.length === 0 && (
+                  <span className="text-xs text-slate-400 italic pt-1">No branches — won't receive notifications</span>
+                )}
+              </div>
             </div>
 
             {/* Section 2: Departments */}
@@ -108,7 +128,7 @@ export default function AdminUserList({ users, currentUserId }: Props) {
                   return (
                     <button
                       key={d.value}
-                      onClick={() => toggleDept(user, d.value)}
+                      onClick={() => toggleItem(user, 'depts', d.value)}
                       disabled={saving === user.id}
                       title={d.label}
                       className={cn(
@@ -126,7 +146,7 @@ export default function AdminUserList({ users, currentUserId }: Props) {
                   )
                 })}
                 {assignedDepts.length === 0 && (
-                  <span className="text-xs text-slate-400 italic pt-1">None — user won't receive notifications</span>
+                  <span className="text-xs text-slate-400 italic pt-1">No departments — won't receive notifications</span>
                 )}
               </div>
             </div>

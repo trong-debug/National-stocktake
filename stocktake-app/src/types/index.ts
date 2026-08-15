@@ -19,6 +19,7 @@ export interface Profile {
   branch: Branch | 'ALL' | null
   dept: Dept | 'ADMIN' | null
   depts: string[] | null
+  branches: string[] | null
   created_at: string
 }
 
