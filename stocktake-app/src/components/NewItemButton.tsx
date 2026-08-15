@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import ClientCombobox from '@/components/ClientCombobox'
+import DeliveryDepotCombobox from '@/components/DeliveryDepotCombobox'
 import { Plus } from 'lucide-react'
 
 interface Props {
@@ -125,7 +126,7 @@ export default function NewItemButton({ branch, profile }: Props) {
               </div>
               <div className="space-y-1">
                 <Label className="text-xs">Delivery Depot</Label>
-                <Input value={form.delivery_depot} onChange={e => set('delivery_depot', e.target.value)} placeholder="e.g. ABX" className="h-9 text-sm" />
+                <DeliveryDepotCombobox value={form.delivery_depot} onChange={v => set('delivery_depot', v)} />
               </div>
             </div>
 
