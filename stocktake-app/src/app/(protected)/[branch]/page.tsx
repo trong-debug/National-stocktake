@@ -6,6 +6,7 @@ import type { Branch, StockItem } from '@/types'
 import { notFound } from 'next/navigation'
 import BranchTable from '@/components/BranchTable'
 import NewItemButton from '@/components/NewItemButton'
+import ClearBranchButton from '@/components/ClearBranchButton'
 
 const VALID_BRANCHES = ['PER', 'ADL', 'QLD', 'VIC', 'CBR', 'NSW', 'NTL']
 
@@ -64,7 +65,12 @@ export default async function BranchPage({ params, searchParams }: PageProps) {
             {count?.toLocaleString() ?? 0} items {q || status || dept ? '(filtered)' : ''}
           </p>
         </div>
-        <NewItemButton branch={branch} profile={profile} />
+        <div className="flex items-center gap-2">
+          {profile?.role === 'admin' && count != null && count > 0 && (
+            <ClearBranchButton branch={branch} totalCount={count} />
+          )}
+          <NewItemButton branch={branch} profile={profile} />
+        </div>
       </div>
 
       <BranchTable
