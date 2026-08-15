@@ -179,6 +179,14 @@ insert into public.status_codes (code, description, dept_first, dept_notes) valu
   ('WR',    'Wrong Region',                                  'CC', null)
 on conflict (code) do nothing;
 
+-- ── Table-level grants ───────────────────────────────────────
+-- Required when schema is applied via SQL editor (not Supabase dashboard UI).
+-- RLS policies alone are not enough; the role also needs table-level privileges.
+grant select, insert, update, delete on table public.stock_items  to authenticated;
+grant select, insert                  on table public.action_logs  to authenticated;
+grant select                          on table public.status_codes to authenticated;
+grant select, update                  on table public.profiles     to authenticated;
+
 -- ── Helper: dashboard stats view ─────────────────────────────
 create or replace view public.dashboard_stats as
 select
