@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build --webpack && mkdir -p .vercel && cp -r .next/output .vercel/",
+    "build": "next build --webpack && node scripts/prepare-output.js",
     "start": "next start",
     "lint": "eslint"
   },
