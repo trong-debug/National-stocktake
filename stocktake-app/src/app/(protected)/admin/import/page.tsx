@@ -92,13 +92,17 @@ function mapRow(raw: Record<string, string>, branch: Branch): ImportRow {
     }
   }
 
-  // Infer dept_assigned from STATUS column if it's a dept code
+  // Infer dept_assigned from STATUS column if it's a dept code or "completed"
   const statusVal = raw['STATUS'] || raw['Status'] || ''
   if (statusVal) {
     const dept = DEPT_STATUS_MAP[statusVal.toLowerCase()]
     if (dept !== undefined) {
       row.dept_assigned = dept
       if (dept === null) row.status = 'completed'
+      // STATUS column holds dept/completion state, not a real status code — clear it
+      if (row.status_code?.toLowerCase() === statusVal.toLowerCase()) {
+        row.status_code = null
+      }
     }
   }
 
@@ -146,13 +150,17 @@ export default function ImportPage() {
       const BATCH = 200
       let imported = 0, errors = 0
 
+      const errMessages: string[] = []
       for (let i = 0; i < mapped.length; i += BATCH) {
         const batch = mapped.slice(i, i + BATCH)
         const { data, error: err } = await supabase.from('stock_items').insert(batch).select('id')
-        if (err) errors += batch.length
-        else imported += (data?.length || 0)
+        if (err) {
+          errors += batch.length
+          errMessages.push(err.message)
+        } else imported += (data?.length || 0)
       }
 
+      if (errMessages.length) setError(errMessages[0])
       setResult({ imported, errors })
       setLoading(false)
     }
