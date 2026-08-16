@@ -45,7 +45,7 @@ export default function StatusCodeCombobox({ value, onChange }: Props) {
         className="w-full border border-input rounded-md px-3 h-9 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-background font-mono"
       />
       {open && filtered.length > 0 && (
-        <ul className="absolute z-50 w-full mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto">
+        <ul className="absolute z-50 w-full min-w-[320px] mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto">
           {filtered.map(s => (
             <li
               key={s.code}
@@ -57,7 +57,7 @@ export default function StatusCodeCombobox({ value, onChange }: Props) {
               }}
             >
               <span className="font-mono font-semibold w-14 shrink-0">{s.code}</span>
-              <span className="text-slate-500 truncate">{s.description}</span>
+              <span className="text-slate-500">{s.description}</span>
             </li>
           ))}
         </ul>

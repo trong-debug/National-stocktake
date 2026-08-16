@@ -115,7 +115,7 @@ export default function NewItemButton({ branch, profile }: Props) {
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>Log New Item — {branch}</DialogTitle>
           </DialogHeader>
