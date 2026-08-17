@@ -91,7 +91,7 @@ export default function AdminUserList({ users: initialUsers, currentUserId }: Pr
               </div>
               <Select
                 value={user.role}
-                onValueChange={v => updateRole(user.id, v)}
+                onValueChange={v => v && updateRole(user.id, v)}
                 disabled={roleSaving === user.id || isSelf}
               >
                 <SelectTrigger className="h-8 w-24 text-xs">
