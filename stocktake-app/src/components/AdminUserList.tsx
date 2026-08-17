@@ -44,28 +44,21 @@ export default function AdminUserList({ users: initialUsers, currentUserId }: Pr
     router.refresh()
   }
 
-  function toggleItem(userId: string, field: 'depts' | 'branches', item: string) {
-    // Update UI instantly
-    setUsers(prev => prev.map(u => {
-      if (u.id !== userId) return u
-      const current: string[] = (u[field] as string[] | null) || []
-      const next = current.includes(item)
-        ? current.filter(x => x !== item)
-        : [...current, item]
-      return { ...u, [field]: next }
-    }))
-
-    // Sync to DB in background — no await, no refresh
-    const user = users.find(u => u.id === userId)
-    if (!user) return
+  function toggleItem(user: Profile, field: 'depts' | 'branches', item: string) {
+    // Compute next value from the user object passed in (always current render state)
     const current: string[] = (user[field] as string[] | null) || []
     const next = current.includes(item)
       ? current.filter(x => x !== item)
       : [...current, item]
-    supabase.from('profiles').update({ [field]: next }).eq('id', userId).then(({ error }) => {
+
+    // Update UI instantly
+    setUsers(prev => prev.map(u => u.id === user.id ? { ...u, [field]: next } : u))
+
+    // Sync to DB in background
+    supabase.from('profiles').update({ [field]: next }).eq('id', user.id).then(({ error }) => {
       if (error) {
         // Revert on failure
-        setUsers(prev => prev.map(u => u.id === userId ? { ...u, [field]: current } : u))
+        setUsers(prev => prev.map(u => u.id === user.id ? { ...u, [field]: current } : u))
       }
     })
   }
@@ -116,10 +109,10 @@ export default function AdminUserList({ users: initialUsers, currentUserId }: Pr
                   return (
                     <button
                       key={b.value}
-                      onClick={() => toggleItem(user.id, 'branches', b.value)}
+                      onClick={() => toggleItem(user, 'branches', b.value)}
                       title={b.label}
                       className={cn(
-                        'text-xs px-3 py-1.5 rounded-md border font-medium transition-colors',
+                        'text-xs px-3 py-1.5 rounded-md border font-medium transition-colors cursor-pointer',
                         active
                           ? BRANCH_COLORS[b.value]
                           : 'bg-white text-slate-500 border-slate-300 hover:border-slate-400'
@@ -144,10 +137,10 @@ export default function AdminUserList({ users: initialUsers, currentUserId }: Pr
                   return (
                     <button
                       key={d.value}
-                      onClick={() => toggleItem(user.id, 'depts', d.value)}
+                      onClick={() => toggleItem(user, 'depts', d.value)}
                       title={d.label}
                       className={cn(
-                        'text-xs px-3 py-1.5 rounded-md border font-medium transition-colors',
+                        'text-xs px-3 py-1.5 rounded-md border font-medium transition-colors cursor-pointer',
                         active
                           ? d.color
                           : 'bg-white text-slate-500 border-slate-300 hover:border-slate-400'
