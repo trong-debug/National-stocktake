@@ -3,14 +3,12 @@
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { useCallback, useState, useTransition } from 'react'
 import { format } from 'date-fns'
-import type { Branch, Dept, ItemStatus, StockItem, Profile } from '@/types'
-import { DEPT_MAP, DEPTS } from '@/lib/constants'
+import type { Branch, Dept, StockItem, Profile } from '@/types'
+import { DEPTS } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Badge } from '@/components/ui/badge'
-import { Search, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Search, ChevronLeft, ChevronRight, X } from 'lucide-react'
 
 interface Props {
   items: StockItem[]
@@ -28,6 +26,12 @@ const DEPT_BADGE: Record<Dept, string> = {
   WH: 'bg-amber-100 text-amber-800 border-amber-200',
   DM: 'bg-green-100 text-green-800 border-green-200',
 }
+
+const DEPT_TABS = [
+  { value: 'all', label: 'All Depts' },
+  ...DEPTS.map(d => ({ value: d.value, label: d.value })),
+  { value: 'unassigned', label: 'Unassigned' },
+]
 
 export default function BranchTable({ items, branch, totalPages, currentPage, totalCount, filters, profile }: Props) {
   const router = useRouter()
@@ -57,76 +61,114 @@ export default function BranchTable({ items, branch, totalPages, currentPage, to
     startTransition(() => router.push(`${pathname}?${params.toString()}`))
   }
 
+  const activeStatus = filters.status ?? 'all'
+  const activeDept = filters.dept ?? 'all'
+
   return (
-    <div className={cn('space-y-3', isPending && 'opacity-60 pointer-events-none')}>
-      {/* Filters */}
-      <div className="flex flex-wrap gap-2 items-center">
-        <form onSubmit={handleSearch} className="flex gap-1">
+    <div className={cn('space-y-0', isPending && 'opacity-60 pointer-events-none')}>
+
+      {/* Dept tab strip */}
+      <div className="flex items-end border-b border-slate-200 bg-white overflow-x-auto">
+        {DEPT_TABS.map(tab => (
+          <button
+            key={tab.value}
+            onClick={() => updateParams({ dept: tab.value })}
+            className={cn(
+              'px-4 py-2.5 text-sm font-medium whitespace-nowrap border-b-2 transition-colors shrink-0',
+              activeDept === tab.value
+                ? 'border-blue-600 text-blue-700'
+                : 'border-transparent text-slate-500 hover:text-slate-800 hover:border-slate-300'
+            )}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Filter bar */}
+      <div className="flex items-center gap-2 py-3 bg-white border-b border-slate-100 flex-wrap">
+        {/* Status toggles */}
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => updateParams({ status: 'all' })}
+            className={cn(
+              'px-3 py-1.5 text-xs font-semibold rounded border transition-colors',
+              activeStatus === 'all'
+                ? 'bg-slate-700 text-white border-slate-700'
+                : 'bg-white text-slate-500 border-slate-300 hover:border-slate-400'
+            )}
+          >
+            ALL
+          </button>
+          <button
+            onClick={() => updateParams({ status: 'in_progress' })}
+            className={cn(
+              'px-3 py-1.5 text-xs font-semibold rounded border transition-colors',
+              activeStatus === 'in_progress'
+                ? 'bg-blue-600 text-white border-blue-600'
+                : 'bg-white text-blue-600 border-blue-300 hover:border-blue-500'
+            )}
+          >
+            OPEN
+          </button>
+          <button
+            onClick={() => updateParams({ status: 'completed' })}
+            className={cn(
+              'px-3 py-1.5 text-xs font-semibold rounded border transition-colors',
+              activeStatus === 'completed'
+                ? 'bg-slate-500 text-white border-slate-500'
+                : 'bg-white text-slate-500 border-slate-300 hover:border-slate-400'
+            )}
+          >
+            CLOSED
+          </button>
+        </div>
+
+        {/* Search */}
+        <form onSubmit={handleSearch} className="flex gap-1 ml-auto">
           <div className="relative">
             <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-400" />
             <Input
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Search client, serial, tracking…"
-              className="pl-8 h-9 w-64 text-sm"
+              className="pl-8 h-9 w-60 text-sm"
             />
           </div>
-          <Button type="submit" size="sm" variant="secondary" className="h-9">Search</Button>
           {filters.q && (
-            <Button type="button" size="sm" variant="ghost" className="h-9" onClick={() => { setSearch(''); updateParams({ q: undefined }) }}>
-              Clear
+            <Button type="button" size="sm" variant="ghost" className="h-9 px-2" onClick={() => { setSearch(''); updateParams({ q: undefined }) }}>
+              <X className="h-4 w-4" />
             </Button>
           )}
+          <Button type="submit" size="sm" variant="secondary" className="h-9">Search</Button>
         </form>
 
-        <Select value={filters.status ?? 'all'} onValueChange={v => updateParams({ status: v ?? undefined })}>
-          <SelectTrigger className="h-9 w-36 text-sm">
-            <SelectValue placeholder="Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All statuses</SelectItem>
-            <SelectItem value="in_progress">In Progress</SelectItem>
-            <SelectItem value="completed">Completed</SelectItem>
-          </SelectContent>
-        </Select>
-
-        <Select value={filters.dept ?? 'all'} onValueChange={v => updateParams({ dept: v ?? undefined })}>
-          <SelectTrigger className="h-9 w-44 text-sm">
-            <SelectValue placeholder="Department" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All departments</SelectItem>
-            {DEPTS.map(d => (
-              <SelectItem key={d.value} value={d.value}>{d.label}</SelectItem>
-            ))}
-            <SelectItem value="unassigned">Unassigned</SelectItem>
-          </SelectContent>
-        </Select>
-
-        <span className="text-xs text-slate-500 ml-auto">{totalCount.toLocaleString()} items</span>
+        <span className="text-xs text-slate-400 font-medium tabular-nums">
+          Totals: {totalCount.toLocaleString()}
+        </span>
       </div>
 
       {/* Table */}
-      <div className="border rounded-lg bg-white overflow-x-auto shadow-sm">
+      <div className="bg-white overflow-x-auto shadow-sm border border-slate-200 rounded-b-lg">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b bg-slate-50 text-slate-600">
-              <th className="text-left px-3 py-2.5 font-medium">Date Listed</th>
-              <th className="text-left px-3 py-2.5 font-medium">Client</th>
-              <th className="text-left px-3 py-2.5 font-medium">Serial</th>
-              <th className="text-left px-3 py-2.5 font-medium">Tracking</th>
-              <th className="text-left px-3 py-2.5 font-medium">Customer</th>
-              <th className="text-left px-3 py-2.5 font-medium">Code</th>
-              <th className="text-left px-3 py-2.5 font-medium">Depot</th>
-              <th className="text-left px-3 py-2.5 font-medium">Dept</th>
-              <th className="text-left px-3 py-2.5 font-medium">Status</th>
-              <th className="text-left px-3 py-2.5 font-medium">Action Required</th>
+            <tr className="border-b bg-slate-50 text-slate-500 text-xs uppercase tracking-wide">
+              <th className="text-left px-3 py-2.5 font-semibold">Date</th>
+              <th className="text-left px-3 py-2.5 font-semibold">Client</th>
+              <th className="text-left px-3 py-2.5 font-semibold">Serial</th>
+              <th className="text-left px-3 py-2.5 font-semibold">Tracking</th>
+              <th className="text-left px-3 py-2.5 font-semibold">Customer</th>
+              <th className="text-left px-3 py-2.5 font-semibold">Code</th>
+              <th className="text-left px-3 py-2.5 font-semibold">Depot</th>
+              <th className="text-left px-3 py-2.5 font-semibold">Dept</th>
+              <th className="text-left px-3 py-2.5 font-semibold">Status</th>
+              <th className="text-left px-3 py-2.5 font-semibold">Action Required</th>
             </tr>
           </thead>
           <tbody>
             {items.length === 0 ? (
               <tr>
-                <td colSpan={11} className="text-center py-12 text-slate-400">
+                <td colSpan={10} className="text-center py-16 text-slate-400">
                   No items found{filters.q || filters.status || filters.dept ? ' for these filters' : ''}
                 </td>
               </tr>
@@ -135,20 +177,19 @@ export default function BranchTable({ items, branch, totalPages, currentPage, to
                 key={item.id}
                 onClick={() => router.push(`/item/${item.id}`)}
                 className={cn(
-                  'border-b hover:bg-blue-50 transition-colors cursor-pointer',
-                  item.status === 'completed' && 'opacity-60',
+                  'border-b last:border-0 hover:bg-blue-50/50 transition-colors cursor-pointer',
                   i % 2 === 1 && 'bg-slate-50/40'
                 )}
               >
-                <td className="px-3 py-2.5 text-slate-500 whitespace-nowrap text-xs">
+                <td className="px-3 py-2.5 text-slate-400 whitespace-nowrap text-xs">
                   {item.date_listed ? format(new Date(item.date_listed), 'd MMM yy') : '—'}
                 </td>
-                <td className="px-3 py-2.5 font-medium max-w-[180px] truncate" title={item.client ?? ''}>
-                  {item.client || <span className="text-slate-400">—</span>}
+                <td className="px-3 py-2.5 font-medium max-w-[160px] truncate" title={item.client ?? ''}>
+                  {item.client || <span className="text-slate-300">—</span>}
                 </td>
-                <td className="px-3 py-2.5 text-slate-600 font-mono text-xs">{item.serial || '—'}</td>
-                <td className="px-3 py-2.5 text-slate-600 font-mono text-xs">{item.tracking || '—'}</td>
-                <td className="px-3 py-2.5 max-w-[140px] truncate text-slate-600" title={item.customer_name ?? ''}>
+                <td className="px-3 py-2.5 text-slate-500 font-mono text-xs">{item.serial || '—'}</td>
+                <td className="px-3 py-2.5 text-slate-500 font-mono text-xs">{item.tracking || '—'}</td>
+                <td className="px-3 py-2.5 max-w-[130px] truncate text-slate-600 text-xs" title={item.customer_name ?? ''}>
                   {item.customer_name || '—'}
                 </td>
                 <td className="px-3 py-2.5">
@@ -156,31 +197,28 @@ export default function BranchTable({ items, branch, totalPages, currentPage, to
                     <span className="inline-block bg-slate-100 text-slate-700 text-xs font-mono rounded px-1.5 py-0.5 font-semibold">
                       {item.status_code}
                     </span>
-                  ) : '—'}
+                  ) : <span className="text-slate-300">—</span>}
                 </td>
-                <td className="px-3 py-2.5 text-xs text-slate-600">{item.delivery_depot || '—'}</td>
+                <td className="px-3 py-2.5 text-xs text-slate-500">{item.delivery_depot || '—'}</td>
                 <td className="px-3 py-2.5">
                   {item.dept_assigned ? (
                     <span className={cn('text-xs font-semibold rounded px-1.5 py-0.5 border', DEPT_BADGE[item.dept_assigned])}>
                       {item.dept_assigned}
                     </span>
                   ) : (
-                    <span className="text-xs text-slate-400 italic">none</span>
+                    <span className="text-xs text-slate-300">—</span>
                   )}
                 </td>
                 <td className="px-3 py-2.5">
-                  <span className={cn(
-                    'text-xs rounded-full px-2 py-0.5 font-medium',
-                    item.status === 'completed'
-                      ? 'bg-green-100 text-green-800'
-                      : 'bg-amber-100 text-amber-800'
-                  )}>
-                    {item.status === 'completed' ? 'Completed' : 'In Progress'}
-                  </span>
+                  {item.status === 'completed' ? (
+                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wide">Closed</span>
+                  ) : (
+                    <span className="text-xs font-bold text-blue-600 uppercase tracking-wide">Open</span>
+                  )}
                 </td>
                 <td className="px-3 py-2.5 max-w-[220px]">
-                  <p className="truncate text-slate-700 text-xs" title={item.action_required || ''}>
-                    {item.action_required || <span className="text-slate-400">—</span>}
+                  <p className="truncate text-slate-600 text-xs" title={item.action_required || ''}>
+                    {item.action_required || <span className="text-slate-300">—</span>}
                   </p>
                 </td>
               </tr>
@@ -191,8 +229,8 @@ export default function BranchTable({ items, branch, totalPages, currentPage, to
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-between">
-          <p className="text-xs text-slate-500">
+        <div className="flex items-center justify-between pt-3">
+          <p className="text-xs text-slate-400">
             Page {currentPage} of {totalPages}
           </p>
           <div className="flex gap-1">

@@ -48,15 +48,23 @@ export default async function BranchPage({ params, searchParams }: PageProps) {
     )
   }
 
-  // Run auth and items query in parallel — items don't need user context
-  const [{ data: { user } }, { data: items, count }] = await Promise.all([
+  // Run all queries in parallel — stats queries are unfiltered for the summary bar
+  const [
+    { data: { user } },
+    { data: items, count },
+    { count: branchTotal },
+    { count: branchOpen },
+  ] = await Promise.all([
     supabase.auth.getUser(),
     itemsQuery,
+    supabase.from('stock_items').select('*', { count: 'exact', head: true }).eq('branch', branch),
+    supabase.from('stock_items').select('*', { count: 'exact', head: true }).eq('branch', branch).eq('status', 'in_progress'),
   ])
 
   const { data: profile } = await supabase.from('profiles').select('*').eq('id', user!.id).single()
 
   const totalPages = Math.ceil((count || 0) / pageSize)
+  const branchDone = (branchTotal ?? 0) - (branchOpen ?? 0)
 
   return (
     <div className="p-6 max-w-full space-y-4">
@@ -66,16 +74,30 @@ export default async function BranchPage({ params, searchParams }: PageProps) {
             <span className="text-xs font-bold bg-blue-900 text-white rounded px-2 py-1">{branch}</span>
             <h1 className="text-xl font-bold text-slate-900">{BRANCH_MAP[branch]}</h1>
           </div>
-          <p className="text-slate-500 text-sm mt-0.5">
-            {count?.toLocaleString() ?? 0} items {q || status || dept ? '(filtered)' : ''}
-          </p>
         </div>
-        <div className="flex items-center gap-2">
-          {count != null && count > 0 && <ExportCSVButton branch={branch} />}
-          {profile?.role === 'admin' && count != null && count > 0 && (
-            <ClearBranchButton branch={branch} totalCount={count} />
-          )}
-          <NewItemButton branch={branch} profile={profile} />
+        <div className="flex items-center gap-6">
+          {/* Stats chips */}
+          <div className="flex items-center gap-4 text-sm">
+            <div className="text-right">
+              <p className="text-xs text-slate-400 uppercase tracking-wide font-medium leading-none mb-0.5">Total</p>
+              <p className="font-bold text-slate-800 tabular-nums">{(branchTotal ?? 0).toLocaleString()}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-xs text-blue-500 uppercase tracking-wide font-medium leading-none mb-0.5">Open</p>
+              <p className="font-bold text-blue-700 tabular-nums">{(branchOpen ?? 0).toLocaleString()}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-xs text-slate-400 uppercase tracking-wide font-medium leading-none mb-0.5">Done</p>
+              <p className="font-bold text-slate-500 tabular-nums">{branchDone.toLocaleString()}</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 border-l pl-6">
+            {branchTotal != null && branchTotal > 0 && <ExportCSVButton branch={branch} />}
+            {profile?.role === 'admin' && branchTotal != null && branchTotal > 0 && (
+              <ClearBranchButton branch={branch} totalCount={branchTotal} />
+            )}
+            <NewItemButton branch={branch} profile={profile} />
+          </div>
         </div>
       </div>
 
