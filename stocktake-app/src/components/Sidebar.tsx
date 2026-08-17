@@ -40,12 +40,12 @@ export default function Sidebar({ profile }: SidebarProps) {
   const isAdmin = profile?.role === 'admin'
 
   return (
-    <div className="w-60 flex flex-col h-full shrink-0 text-white" style={{ backgroundColor: '#00b4d8' }}>
+    <div className="w-60 flex flex-col h-full shrink-0 text-white bg-blue-900">
 
       {/* User info */}
-      <div className="px-5 pt-5 pb-4" style={{ backgroundColor: 'rgba(0,0,0,0.12)' }}>
+      <div className="px-5 pt-5 pb-4 bg-blue-950/60">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold uppercase shrink-0 border-2 border-white/40" style={{ backgroundColor: 'rgba(0,0,0,0.2)' }}>
+          <div className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold uppercase shrink-0 border-2 border-white/40" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}>
             {profile?.full_name?.[0] || profile?.email?.[0] || '?'}
           </div>
           <div className="flex-1 min-w-0">
@@ -69,7 +69,7 @@ export default function Sidebar({ profile }: SidebarProps) {
       </div>
 
       {/* App title */}
-      <div className="px-5 py-3 flex items-center gap-2.5 border-b" style={{ borderColor: 'rgba(255,255,255,0.2)' }}>
+      <div className="px-5 py-3 flex items-center gap-2.5 border-b border-blue-800">
         <img src="/becool-logo.svg" alt="Be Cool" className="w-7 h-7 rounded-full shrink-0" />
         <div>
           <p className="text-xs font-bold leading-tight">National Stocktake</p>
@@ -93,10 +93,10 @@ export default function Sidebar({ profile }: SidebarProps) {
           onClick={() => setBranchesOpen(o => !o)}
           className="w-full flex items-center gap-3 px-5 py-3 text-sm font-medium transition-colors text-left"
           style={{
-            backgroundColor: branchesOpen ? 'rgba(0,0,0,0.12)' : undefined,
+            backgroundColor: branchesOpen ? 'rgba(255,255,255,0.06)' : undefined,
             color: 'rgba(255,255,255,0.95)',
           }}
-          onMouseEnter={e => { if (!branchesOpen) (e.currentTarget as HTMLElement).style.backgroundColor = 'rgba(0,0,0,0.08)' }}
+          onMouseEnter={e => { if (!branchesOpen) (e.currentTarget as HTMLElement).style.backgroundColor = 'rgba(255,255,255,0.05)' }}
           onMouseLeave={e => { if (!branchesOpen) (e.currentTarget as HTMLElement).style.backgroundColor = '' }}
         >
           <GitBranch className="h-5 w-5 shrink-0" />
@@ -105,14 +105,14 @@ export default function Sidebar({ profile }: SidebarProps) {
         </button>
 
         {branchesOpen && (
-          <div style={{ backgroundColor: 'rgba(0,0,0,0.08)' }}>
+          <div style={{ backgroundColor: 'rgba(255,255,255,0.04)' }}>
             {BRANCHES.map(({ value, label }) => (
               <Link
                 key={value}
                 href={`/${value}`}
                 className="flex items-center gap-3 pl-12 pr-5 py-2.5 text-sm transition-colors"
                 style={{
-                  backgroundColor: pathname === `/${value}` ? 'rgba(0,0,0,0.18)' : undefined,
+                  backgroundColor: pathname === `/${value}` ? 'rgba(255,255,255,0.12)' : undefined,
                   color: pathname === `/${value}` ? '#ffffff' : 'rgba(255,255,255,0.8)',
                   fontWeight: pathname === `/${value}` ? 600 : 400,
                 }}
@@ -131,10 +131,10 @@ export default function Sidebar({ profile }: SidebarProps) {
               onClick={() => setAdminOpen(o => !o)}
               className="w-full flex items-center gap-3 px-5 py-3 text-sm font-medium transition-colors text-left"
               style={{
-                backgroundColor: adminOpen ? 'rgba(0,0,0,0.12)' : undefined,
+                backgroundColor: adminOpen ? 'rgba(255,255,255,0.06)' : undefined,
                 color: 'rgba(255,255,255,0.95)',
               }}
-              onMouseEnter={e => { if (!adminOpen) (e.currentTarget as HTMLElement).style.backgroundColor = 'rgba(0,0,0,0.08)' }}
+              onMouseEnter={e => { if (!adminOpen) (e.currentTarget as HTMLElement).style.backgroundColor = 'rgba(255,255,255,0.04)' }}
               onMouseLeave={e => { if (!adminOpen) (e.currentTarget as HTMLElement).style.backgroundColor = '' }}
             >
               <Settings className="h-5 w-5 shrink-0" />
@@ -143,12 +143,12 @@ export default function Sidebar({ profile }: SidebarProps) {
             </button>
 
             {adminOpen && (
-              <div style={{ backgroundColor: 'rgba(0,0,0,0.08)' }}>
+              <div style={{ backgroundColor: 'rgba(255,255,255,0.04)' }}>
                 <Link
                   href="/admin"
                   className="flex items-center gap-3 pl-12 pr-5 py-2.5 text-sm transition-colors"
                   style={{
-                    backgroundColor: pathname === '/admin' ? 'rgba(0,0,0,0.18)' : undefined,
+                    backgroundColor: pathname === '/admin' ? 'rgba(255,255,255,0.12)' : undefined,
                     color: pathname === '/admin' ? '#ffffff' : 'rgba(255,255,255,0.8)',
                     fontWeight: pathname === '/admin' ? 600 : 400,
                   }}
@@ -159,7 +159,7 @@ export default function Sidebar({ profile }: SidebarProps) {
                   href="/admin/clients"
                   className="flex items-center gap-3 pl-12 pr-5 py-2.5 text-sm transition-colors"
                   style={{
-                    backgroundColor: pathname === '/admin/clients' ? 'rgba(0,0,0,0.18)' : undefined,
+                    backgroundColor: pathname === '/admin/clients' ? 'rgba(255,255,255,0.12)' : undefined,
                     color: pathname === '/admin/clients' ? '#ffffff' : 'rgba(255,255,255,0.8)',
                     fontWeight: pathname === '/admin/clients' ? 600 : 400,
                   }}
@@ -171,7 +171,7 @@ export default function Sidebar({ profile }: SidebarProps) {
                   href="/admin/import"
                   className="flex items-center gap-3 pl-12 pr-5 py-2.5 text-sm transition-colors"
                   style={{
-                    backgroundColor: pathname === '/admin/import' ? 'rgba(0,0,0,0.18)' : undefined,
+                    backgroundColor: pathname === '/admin/import' ? 'rgba(255,255,255,0.12)' : undefined,
                     color: pathname === '/admin/import' ? '#ffffff' : 'rgba(255,255,255,0.8)',
                     fontWeight: pathname === '/admin/import' ? 600 : 400,
                   }}
@@ -186,7 +186,7 @@ export default function Sidebar({ profile }: SidebarProps) {
       </nav>
 
       {/* Sign out */}
-      <div className="px-5 py-4" style={{ borderTop: '1px solid rgba(255,255,255,0.2)' }}>
+      <div className="px-5 py-4 border-t border-blue-800">
         <button
           onClick={handleSignOut}
           className="w-full flex items-center gap-3 text-sm py-2 transition-opacity"
@@ -218,7 +218,7 @@ function NavRow({
       href={href}
       className="flex items-center gap-3 px-5 py-3 text-sm transition-colors"
       style={{
-        backgroundColor: active ? 'rgba(0,0,0,0.18)' : undefined,
+        backgroundColor: active ? 'rgba(255,255,255,0.12)' : undefined,
         color: active ? '#ffffff' : 'rgba(255,255,255,0.9)',
         fontWeight: active ? 600 : 400,
       }}
