@@ -30,27 +30,44 @@ const BRANCH_COLORS: Record<string, string> = {
   NTL: 'bg-slate-500 text-white border-slate-500',
 }
 
-export default function AdminUserList({ users, currentUserId }: Props) {
-  const [saving, setSaving] = useState<string | null>(null)
+export default function AdminUserList({ users: initialUsers, currentUserId }: Props) {
+  // Local optimistic state — updated immediately on toggle, no server wait
+  const [users, setUsers] = useState<Profile[]>(initialUsers)
+  const [roleSaving, setRoleSaving] = useState<string | null>(null)
   const supabase = createClient()
   const router = useRouter()
 
-  async function updateRole(id: string, value: string | null) {
-    setSaving(id)
-    await supabase.from('profiles').update({ role: value || null }).eq('id', id)
-    setSaving(null)
+  async function updateRole(id: string, value: string) {
+    setRoleSaving(id)
+    await supabase.from('profiles').update({ role: value }).eq('id', id)
+    setRoleSaving(null)
     router.refresh()
   }
 
-  async function toggleItem(user: Profile, field: 'depts' | 'branches', item: string) {
+  function toggleItem(userId: string, field: 'depts' | 'branches', item: string) {
+    // Update UI instantly
+    setUsers(prev => prev.map(u => {
+      if (u.id !== userId) return u
+      const current: string[] = (u[field] as string[] | null) || []
+      const next = current.includes(item)
+        ? current.filter(x => x !== item)
+        : [...current, item]
+      return { ...u, [field]: next }
+    }))
+
+    // Sync to DB in background — no await, no refresh
+    const user = users.find(u => u.id === userId)
+    if (!user) return
     const current: string[] = (user[field] as string[] | null) || []
     const next = current.includes(item)
-      ? current.filter(d => d !== item)
+      ? current.filter(x => x !== item)
       : [...current, item]
-    setSaving(user.id)
-    await supabase.from('profiles').update({ [field]: next }).eq('id', user.id)
-    setSaving(null)
-    router.refresh()
+    supabase.from('profiles').update({ [field]: next }).eq('id', userId).then(({ error }) => {
+      if (error) {
+        // Revert on failure
+        setUsers(prev => prev.map(u => u.id === userId ? { ...u, [field]: current } : u))
+      }
+    })
   }
 
   return (
@@ -74,8 +91,8 @@ export default function AdminUserList({ users, currentUserId }: Props) {
               </div>
               <Select
                 value={user.role}
-                onValueChange={v => updateRole(user.id, v ?? null)}
-                disabled={saving === user.id || isSelf}
+                onValueChange={v => updateRole(user.id, v)}
+                disabled={roleSaving === user.id || isSelf}
               >
                 <SelectTrigger className="h-8 w-24 text-xs">
                   <SelectValue />
@@ -85,7 +102,7 @@ export default function AdminUserList({ users, currentUserId }: Props) {
                   <SelectItem value="admin">Admin</SelectItem>
                 </SelectContent>
               </Select>
-              {saving === user.id && (
+              {roleSaving === user.id && (
                 <span className="text-xs text-slate-400 animate-pulse shrink-0">Saving…</span>
               )}
             </div>
@@ -99,8 +116,7 @@ export default function AdminUserList({ users, currentUserId }: Props) {
                   return (
                     <button
                       key={b.value}
-                      onClick={() => toggleItem(user, 'branches', b.value)}
-                      disabled={saving === user.id}
+                      onClick={() => toggleItem(user.id, 'branches', b.value)}
                       title={b.label}
                       className={cn(
                         'text-xs px-3 py-1.5 rounded-md border font-medium transition-colors',
@@ -128,8 +144,7 @@ export default function AdminUserList({ users, currentUserId }: Props) {
                   return (
                     <button
                       key={d.value}
-                      onClick={() => toggleItem(user, 'depts', d.value)}
-                      disabled={saving === user.id}
+                      onClick={() => toggleItem(user.id, 'depts', d.value)}
                       title={d.label}
                       className={cn(
                         'text-xs px-3 py-1.5 rounded-md border font-medium transition-colors',
