@@ -42,32 +42,6 @@ export default function Sidebar({ profile }: SidebarProps) {
   return (
     <div className="w-60 flex flex-col h-full shrink-0 text-white bg-blue-900">
 
-      {/* User info */}
-      <div className="px-5 pt-5 pb-4 bg-blue-950/60">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold uppercase shrink-0 border-2 border-white/40" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}>
-            {profile?.full_name?.[0] || profile?.email?.[0] || '?'}
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold truncate leading-tight">
-              {profile?.full_name || profile?.email?.split('@')[0] || 'User'}
-            </p>
-            <p className="text-xs truncate mt-0.5" style={{ color: 'rgba(255,255,255,0.75)' }}>
-              {profile?.email || ''}
-            </p>
-          </div>
-          {profile?.id && <NotificationBell userId={profile.id} />}
-        </div>
-        <div className="mt-3 flex items-center gap-1.5">
-          <span className="text-xs font-semibold px-2 py-0.5 rounded" style={{ backgroundColor: 'rgba(255,255,255,0.2)' }}>
-            {profile?.role === 'admin' ? 'Admin' : 'Staff'}
-          </span>
-          {profile?.depts?.map(d => (
-            <span key={d} className="text-xs px-1.5 py-0.5 rounded" style={{ backgroundColor: 'rgba(255,255,255,0.15)' }}>{d}</span>
-          ))}
-        </div>
-      </div>
-
       {/* App title */}
       <div className="px-5 py-3 flex items-center gap-2.5 border-b border-blue-800">
         <img src="/becool-logo.svg" alt="Be Cool" className="w-7 h-7 rounded-full shrink-0" />
@@ -185,16 +159,31 @@ export default function Sidebar({ profile }: SidebarProps) {
         )}
       </nav>
 
-      {/* Sign out */}
-      <div className="px-5 py-4 border-t border-blue-800">
+      {/* User info + sign out */}
+      <div className="px-4 py-4 border-t border-blue-800">
+        <div className="flex items-center gap-2 mb-2">
+          <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold uppercase shrink-0" style={{ backgroundColor: 'rgba(255,255,255,0.15)' }}>
+            {profile?.full_name?.[0] || profile?.email?.[0] || '?'}
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-xs font-semibold truncate leading-tight">
+              {profile?.full_name || profile?.email?.split('@')[0] || 'User'}
+            </p>
+            <p className="text-xs truncate" style={{ color: 'rgba(255,255,255,0.6)' }}>
+              {profile?.role === 'admin' ? 'Admin' : 'Staff'}
+              {profile?.depts?.length ? ' · ' + profile.depts.join(', ') : ''}
+            </p>
+          </div>
+          {profile?.id && <NotificationBell userId={profile.id} />}
+        </div>
         <button
           onClick={handleSignOut}
-          className="w-full flex items-center gap-3 text-sm py-2 transition-opacity"
-          style={{ color: 'rgba(255,255,255,0.8)' }}
-          onMouseEnter={e => (e.currentTarget as HTMLElement).style.opacity = '1'}
-          onMouseLeave={e => (e.currentTarget as HTMLElement).style.opacity = ''}
+          className="w-full flex items-center gap-2 text-xs py-1.5 transition-opacity"
+          style={{ color: 'rgba(255,255,255,0.65)' }}
+          onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = '#ffffff'}
+          onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.65)'}
         >
-          <LogOut className="h-5 w-5 shrink-0" />
+          <LogOut className="h-4 w-4 shrink-0" />
           Sign out
         </button>
       </div>
