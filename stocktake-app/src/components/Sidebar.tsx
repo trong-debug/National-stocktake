@@ -15,6 +15,7 @@ import {
   ChevronDown,
   Users,
   GitBranch,
+  Package2,
 } from 'lucide-react'
 import NotificationBell from '@/components/NotificationBell'
 
@@ -44,7 +45,9 @@ export default function Sidebar({ profile }: SidebarProps) {
 
       {/* App title */}
       <div className="px-5 py-3 flex items-center gap-2.5 border-b border-blue-800">
-        <img src="/becool-logo.svg" alt="Be Cool" className="w-7 h-7 rounded-full shrink-0" />
+        <div className="w-7 h-7 rounded-full bg-white/15 flex items-center justify-center shrink-0">
+            <Package2 className="w-4 h-4 text-white" />
+          </div>
         <div>
           <p className="text-xs font-bold leading-tight">National Stocktake</p>
           <p className="text-xs" style={{ color: 'rgba(255,255,255,0.65)' }}>Be Cool Couriers</p>
