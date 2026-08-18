@@ -14,6 +14,7 @@ import {
   Upload,
   ChevronDown,
   Users,
+  UserCog,
   GitBranch,
   Package2,
 } from 'lucide-react'
@@ -130,6 +131,7 @@ export default function Sidebar({ profile }: SidebarProps) {
                     fontWeight: pathname === '/admin' ? 600 : 400,
                   }}
                 >
+                  <UserCog className="h-4 w-4 mr-1 shrink-0" style={{ display: 'inline' }} />
                   Users
                 </Link>
                 <Link
