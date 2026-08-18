@@ -6,18 +6,12 @@ import { createClient } from '@/lib/supabase/client'
 import type { StockItem, Dept, Profile } from '@/types'
 import { DEPTS } from '@/lib/constants'
 import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { ArrowRightLeft } from 'lucide-react'
 
 interface Props {
   item: StockItem
   profile: Profile | null
-}
-
-const DEPT_COLORS: Record<string, string> = {
-  RP: 'bg-blue-600 text-white border-blue-600',
-  CC: 'bg-purple-600 text-white border-purple-600',
-  WH: 'bg-amber-500 text-white border-amber-500',
-  DM: 'bg-green-600 text-white border-green-600',
 }
 
 export default function InlineDeptTransfer({ item: initialItem, profile }: Props) {
@@ -30,7 +24,7 @@ export default function InlineDeptTransfer({ item: initialItem, profile }: Props
 
   const isDirty = selectedDept !== currentDept
 
-  async function handleSave() {
+  async function handleTransfer() {
     if (!selectedDept || !isDirty) return
 
     const noteField = `notes_${selectedDept.toLowerCase()}` as `notes_${'rp'|'cc'|'wh'|'dm'}`
@@ -79,62 +73,59 @@ export default function InlineDeptTransfer({ item: initialItem, profile }: Props
 
   return (
     <div className="space-y-3">
-      {/* Dept selector row */}
-      <div className="flex items-start gap-4">
-        <span className="text-xs font-medium text-slate-500 w-32 shrink-0 pt-1.5">Department</span>
-        <div className="flex flex-wrap gap-2">
-          {DEPTS.map(d => {
-            const isSelected = selectedDept === d.value
-            return (
-              <button
-                key={d.value}
-                onClick={() => setSelectedDept(d.value as Dept)}
-                className={cn(
-                  'text-xs px-3 py-1.5 rounded-md border font-medium transition-colors cursor-pointer',
-                  isSelected
-                    ? DEPT_COLORS[d.value]
-                    : 'bg-white text-slate-500 border-slate-300 hover:border-slate-400'
-                )}
+      {/* Dropdown + Transfer button row */}
+      <div className="flex items-center gap-4">
+        <span className="text-xs font-medium text-slate-500 w-32 shrink-0">Department</span>
+        <div className="flex items-center gap-2">
+          <Select
+            value={selectedDept || ''}
+            onValueChange={v => setSelectedDept((v || null) as Dept | null)}
+          >
+            <SelectTrigger className="w-52 h-8 text-sm">
+              <SelectValue placeholder="No department assigned" />
+            </SelectTrigger>
+            <SelectContent>
+              {DEPTS.map(d => (
+                <SelectItem key={d.value} value={d.value}>
+                  {d.value} — {d.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          {isDirty && (
+            <>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleTransfer}
+                disabled={saving || !selectedDept}
               >
-                {d.value}
-                <span className={cn('ml-1.5 font-normal', isSelected ? 'opacity-80' : 'text-slate-400')}>
-                  {d.label}
-                </span>
+                <ArrowRightLeft className="h-3.5 w-3.5 mr-1.5" />
+                {saving ? 'Saving…' : 'Transfer'}
+              </Button>
+              <button
+                onClick={handleCancel}
+                className="text-xs text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
+              >
+                Cancel
               </button>
-            )
-          })}
-          {!selectedDept && (
-            <span className="text-xs text-slate-400 italic pt-1">No department assigned</span>
+            </>
           )}
         </div>
       </div>
 
-      {/* Note + save — only shown when selection changed */}
+      {/* Note textarea — only shown when selection changed */}
       {isDirty && (
-        <>
-          <div className="flex items-start gap-4">
-            <span className="text-xs font-medium text-slate-500 w-32 shrink-0 pt-1">Action Note</span>
-            <textarea
-              value={note}
-              onChange={e => setNote(e.target.value)}
-              placeholder={`Note for ${DEPTS.find(d => d.value === selectedDept)?.label || 'department'}…`}
-              className="flex-1 border border-slate-200 rounded-md px-3 py-2 text-sm min-h-[72px] focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-            />
-          </div>
-          <div className="flex justify-end gap-2">
-            <Button type="button" variant="outline" size="sm" onClick={handleCancel}>
-              Cancel
-            </Button>
-            <Button
-              size="sm"
-              onClick={handleSave}
-              disabled={saving}
-              className="bg-blue-800 hover:bg-blue-900"
-            >
-              {saving ? 'Saving…' : currentDept ? 'Transfer' : 'Assign'}
-            </Button>
-          </div>
-        </>
+        <div className="flex items-start gap-4">
+          <span className="text-xs font-medium text-slate-500 w-32 shrink-0 pt-1">Action Note</span>
+          <textarea
+            value={note}
+            onChange={e => setNote(e.target.value)}
+            placeholder={`Note for ${DEPTS.find(d => d.value === selectedDept)?.label || 'department'}…`}
+            className="flex-1 border border-slate-200 rounded-md px-3 py-2 text-sm min-h-[72px] focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+          />
+        </div>
       )}
     </div>
   )
