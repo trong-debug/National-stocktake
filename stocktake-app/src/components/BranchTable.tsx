@@ -43,7 +43,7 @@ export default function BranchTable({ items, branch, totalPages, currentPage, to
   const updateParams = useCallback((updates: Record<string, string | undefined>) => {
     const params = new URLSearchParams(searchParams.toString())
     Object.entries(updates).forEach(([k, v]) => {
-      if (v === undefined || v === '' || v === 'all') params.delete(k)
+      if (v === undefined || v === '') params.delete(k)
       else params.set(k, v)
     })
     params.delete('page')
@@ -61,7 +61,7 @@ export default function BranchTable({ items, branch, totalPages, currentPage, to
     startTransition(() => router.push(`${pathname}?${params.toString()}`))
   }
 
-  const activeStatus = filters.status ?? 'all'
+  const activeStatus = filters.status ?? 'in_progress'
   const activeDept = filters.dept ?? 'all'
 
   return (

@@ -37,7 +37,8 @@ export default async function BranchPage({ params, searchParams }: PageProps) {
     .order('created_at', { ascending: false })
     .range(from, to)
 
-  if (status && status !== 'all') itemsQuery = itemsQuery.eq('status', status)
+  const effectiveStatus = status ?? 'in_progress'
+  if (effectiveStatus !== 'all') itemsQuery = itemsQuery.eq('status', effectiveStatus)
   if (dept && dept !== 'all') {
     if (dept === 'unassigned') itemsQuery = itemsQuery.is('dept_assigned', null)
     else itemsQuery = itemsQuery.eq('dept_assigned', dept)
@@ -107,7 +108,7 @@ export default async function BranchPage({ params, searchParams }: PageProps) {
         totalPages={totalPages}
         currentPage={pageNum}
         totalCount={count || 0}
-        filters={{ status, dept, q }}
+        filters={{ status: effectiveStatus, dept, q }}
         profile={profile}
       />
     </div>
