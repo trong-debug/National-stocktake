@@ -3,13 +3,9 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import type { StockItem, Dept, Profile } from '@/types'
-import { DEPTS } from '@/lib/constants'
+import type { StockItem, Profile } from '@/types'
 import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Label } from '@/components/ui/label'
-import { CheckCircle2, ArrowRightLeft } from 'lucide-react'
+import { CheckCircle2 } from 'lucide-react'
 
 interface Props {
   item: StockItem
@@ -18,57 +14,13 @@ interface Props {
 
 export default function ItemActions({ item: initialItem, profile }: Props) {
   const [item, setItem] = useState(initialItem)
-  const [assignOpen, setAssignOpen] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [newDept, setNewDept] = useState<Dept | ''>('')
-  const [note, setNote] = useState('')
   const router = useRouter()
   const supabase = createClient()
 
   const isCompleted = item.status === 'completed'
 
-  async function handleAssign(e: React.FormEvent) {
-    e.preventDefault()
-    if (!newDept) return
-
-    const noteField = `notes_${newDept.toLowerCase()}` as `notes_${'rp'|'cc'|'wh'|'dm'}`
-    const prevDept = item.dept_assigned
-
-    // Optimistic: close dialog and show new dept immediately
-    setItem(i => ({ ...i, dept_assigned: newDept as Dept }))
-    setAssignOpen(false)
-    setLoading(true)
-
-    await supabase.from('stock_items').update({
-      dept_assigned: newDept,
-      action_required: note || item.action_required,
-      [noteField]: note || null,
-      updated_by: profile?.id,
-    }).eq('id', item.id)
-
-    await supabase.from('action_logs').insert({
-      item_id: item.id,
-      user_id: profile?.id,
-      user_name: profile?.full_name || profile?.email,
-      action_type: prevDept ? 'transferred' : 'assigned',
-      from_dept: prevDept,
-      to_dept: newDept,
-      note,
-    })
-
-    // Fire-and-forget — don't block UI on email
-    fetch('/api/notify', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ itemId: item.id, dept: newDept, note, assignedBy: profile?.full_name || profile?.email }),
-    })
-
-    setLoading(false)
-    router.refresh()
-  }
-
   async function handleComplete() {
-    // Optimistic: flip to completed immediately
     setItem(i => ({ ...i, status: 'completed', completed_at: new Date().toISOString() }))
     setLoading(true)
 
@@ -93,7 +45,6 @@ export default function ItemActions({ item: initialItem, profile }: Props) {
   }
 
   async function handleReopen() {
-    // Optimistic: flip back to in_progress immediately
     setItem(i => ({ ...i, status: 'in_progress', completed_at: null }))
     setLoading(true)
 
@@ -121,68 +72,21 @@ export default function ItemActions({ item: initialItem, profile }: Props) {
   return (
     <div className="flex gap-2 shrink-0">
       {!isCompleted && (
-        <>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => { setNewDept(item.dept_assigned || ''); setNote(''); setAssignOpen(true) }}
-            disabled={loading}
-          >
-            <ArrowRightLeft className="h-3.5 w-3.5 mr-1.5" />
-            {item.dept_assigned ? 'Transfer' : 'Assign Dept'}
-          </Button>
-          <Button
-            size="sm"
-            className="bg-green-700 hover:bg-green-800"
-            onClick={handleComplete}
-            disabled={loading}
-          >
-            <CheckCircle2 className="h-3.5 w-3.5 mr-1.5" />
-            Mark Complete
-          </Button>
-        </>
+        <Button
+          size="sm"
+          className="bg-green-700 hover:bg-green-800"
+          onClick={handleComplete}
+          disabled={loading}
+        >
+          <CheckCircle2 className="h-3.5 w-3.5 mr-1.5" />
+          Mark Complete
+        </Button>
       )}
       {isCompleted && (
         <Button variant="outline" size="sm" onClick={handleReopen} disabled={loading}>
           Reopen
         </Button>
       )}
-
-      <Dialog open={assignOpen} onOpenChange={setAssignOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>{item.dept_assigned ? 'Transfer to Department' : 'Assign to Department'}</DialogTitle>
-          </DialogHeader>
-          <form onSubmit={handleAssign} className="space-y-4 mt-2">
-            <div className="space-y-1.5">
-              <Label className="text-xs">Department <span className="text-red-500">*</span></Label>
-              <Select value={newDept} onValueChange={v => setNewDept((v ?? '') as Dept)} required>
-                <SelectTrigger><SelectValue placeholder="Select department" /></SelectTrigger>
-                <SelectContent>
-                  {DEPTS.map(d => <SelectItem key={d.value} value={d.value}>{d.label}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-1.5">
-              <Label className="text-xs">Action note for {newDept || 'department'}</Label>
-              <textarea
-                value={note}
-                onChange={e => setNote(e.target.value)}
-                placeholder="What does this department need to do?"
-                className="w-full border rounded-md px-3 py-2 text-sm min-h-[80px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-
-            <div className="flex gap-2 justify-end">
-              <Button type="button" variant="outline" onClick={() => setAssignOpen(false)}>Cancel</Button>
-              <Button type="submit" disabled={loading || !newDept} className="bg-blue-800 hover:bg-blue-900">
-                {loading ? 'Saving…' : item.dept_assigned ? 'Transfer' : 'Assign'}
-              </Button>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
     </div>
   )
 }

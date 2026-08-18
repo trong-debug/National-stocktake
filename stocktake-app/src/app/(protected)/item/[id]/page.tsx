@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import ItemActions from '@/components/ItemActions'
+import InlineDeptTransfer from '@/components/InlineDeptTransfer'
 import ActionLogList from '@/components/ActionLogList'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
@@ -112,6 +113,12 @@ export default async function ItemPage({ params }: PageProps) {
                 {typedItem.action_required || <span className="text-slate-400 italic">No action note</span>}
               </p>
             </div>
+            {typedItem.status !== 'completed' && (
+              <>
+                <Separator />
+                <InlineDeptTransfer item={typedItem} profile={profile} />
+              </>
+            )}
           </CardContent>
         </Card>
 
