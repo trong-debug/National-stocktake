@@ -41,7 +41,7 @@ export default function Sidebar({ profile }: SidebarProps) {
   const isAdmin = profile?.role === 'admin'
 
   return (
-    <div className="w-56 flex flex-col h-full shrink-0 text-white" style={{ backgroundColor: '#00ACC1' }}>
+    <div className="w-56 flex flex-col h-full shrink-0 text-white" style={{ backgroundColor: '#007B8E' }}>
 
       {/* User info */}
       <div className="px-4 py-4 border-b flex items-center gap-2.5" style={{ borderColor: 'rgba(255,255,255,0.15)' }}>
