@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import ClientCombobox from '@/components/ClientCombobox'
 import DeliveryDepotCombobox from '@/components/DeliveryDepotCombobox'
 import StatusCodeCombobox from '@/components/StatusCodeCombobox'
-import { Plus } from 'lucide-react'
+import { Plus, Search } from 'lucide-react'
 
 interface Props {
   branch: Branch
@@ -23,6 +23,8 @@ interface Props {
 export default function NewItemButton({ branch, profile }: Props) {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [searching, setSearching] = useState(false)
+  const [searchMsg, setSearchMsg] = useState<{ type: 'ok' | 'err'; text: string } | null>(null)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [clientList, setClientList] = useState<string[]>([])
   const router = useRouter()
@@ -47,6 +49,39 @@ export default function NewItemButton({ branch, profile }: Props) {
 
   function set(field: string, value: string) {
     setForm(f => ({ ...f, [field]: value }))
+  }
+
+  async function handleSearch() {
+    const tracking = form.tracking.trim()
+    if (!tracking) return
+    setSearching(true)
+    setSearchMsg(null)
+
+    const { data } = await supabase
+      .from('stock_items')
+      .select('client, serial, customer_name, status_code, delivery_depot, dept_assigned, action_required')
+      .ilike('tracking', tracking)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+
+    if (data) {
+      setForm(f => ({
+        ...f,
+        client: data.client || f.client,
+        serial: data.serial || f.serial,
+        customer_name: data.customer_name || f.customer_name,
+        status_code: data.status_code || f.status_code,
+        delivery_depot: data.delivery_depot || f.delivery_depot,
+        dept_assigned: data.dept_assigned || f.dept_assigned,
+        action_required: data.action_required || f.action_required,
+      }))
+      setSearchMsg({ type: 'ok', text: 'Fields pre-filled from existing record.' })
+    } else {
+      setSearchMsg({ type: 'err', text: 'No existing item found with that tracking number.' })
+    }
+
+    setSearching(false)
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -108,6 +143,7 @@ export default function NewItemButton({ branch, profile }: Props) {
       <Button onClick={() => {
         setForm({ date_listed: new Date().toISOString().split('T')[0], client: '', serial: '', tracking: '', customer_name: '', status_code: '', action_required: '', delivery_depot: '', dept_assigned: '' })
         setSubmitError(null)
+        setSearchMsg(null)
         setOpen(true)
       }} className="bg-blue-800 hover:bg-blue-900">
         <Plus className="h-4 w-4 mr-1.5" />
@@ -149,7 +185,30 @@ export default function NewItemButton({ branch, profile }: Props) {
               </div>
               <div className="space-y-1">
                 <Label className="text-xs">Tracking</Label>
-                <Input value={form.tracking} onChange={e => set('tracking', e.target.value)} placeholder="Tracking code" className="h-9 text-sm font-mono" />
+                <div className="flex gap-1.5">
+                  <Input
+                    value={form.tracking}
+                    onChange={e => { set('tracking', e.target.value); setSearchMsg(null) }}
+                    placeholder="Tracking code"
+                    className="h-9 text-sm font-mono flex-1"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-9 px-3 shrink-0"
+                    disabled={searching || !form.tracking.trim()}
+                    onClick={handleSearch}
+                  >
+                    <Search className="h-3.5 w-3.5 mr-1" />
+                    {searching ? 'Searching…' : 'Search'}
+                  </Button>
+                </div>
+                {searchMsg && (
+                  <p className={`text-xs mt-1 ${searchMsg.type === 'ok' ? 'text-green-600' : 'text-amber-600'}`}>
+                    {searchMsg.text}
+                  </p>
+                )}
               </div>
             </div>
 
