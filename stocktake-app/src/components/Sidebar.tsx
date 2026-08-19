@@ -178,15 +178,18 @@ export default function Sidebar({ profile }: SidebarProps) {
 
 function FakeRow({ icon, label, expandable }: { icon: React.ReactNode; label: string; expandable?: boolean }) {
   return (
-    <div
-      className="flex items-center gap-3 px-4 py-3 text-sm select-none"
+    <button
+      type="button"
+      className="w-full flex items-center gap-3 px-4 py-3 text-sm text-left cursor-pointer transition-colors"
       style={{ color: 'rgba(255,255,255,0.85)' }}
+      onMouseEnter={e => (e.currentTarget as HTMLElement).style.backgroundColor = 'rgba(0,0,0,0.1)'}
+      onMouseLeave={e => (e.currentTarget as HTMLElement).style.backgroundColor = ''}
     >
       {icon}
       <span className="flex-1">{label}</span>
       {expandable && (
         <ChevronDown className="h-4 w-4 shrink-0" style={{ color: 'rgba(255,255,255,0.6)' }} />
       )}
-    </div>
+    </button>
   )
 }
