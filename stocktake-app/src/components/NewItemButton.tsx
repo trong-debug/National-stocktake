@@ -178,37 +178,38 @@ export default function NewItemButton({ branch, profile }: Props) {
               />
             </div>
 
-            <div className="space-y-1">
-              <Label className="text-xs">Serial</Label>
-              <Input value={form.serial} onChange={e => set('serial', e.target.value)} placeholder="Order / serial #" className="h-9 text-sm font-mono" />
-            </div>
-
-            <div className="space-y-1">
-              <Label className="text-xs">Tracking</Label>
-              <div className="flex gap-1.5">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <Label className="text-xs">Serial</Label>
+                <Input value={form.serial} onChange={e => set('serial', e.target.value)} placeholder="Order / serial #" className="h-9 text-sm font-mono" />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">Tracking</Label>
                 <Input
                   value={form.tracking}
                   onChange={e => { set('tracking', e.target.value); setSearchMsg(null) }}
                   placeholder="Tracking code"
-                  className="h-9 text-sm font-mono flex-1"
+                  className="h-9 text-sm font-mono w-full"
                 />
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="h-9 px-3 shrink-0"
-                  disabled={searching || !form.tracking.trim()}
-                  onClick={handleSearch}
-                >
-                  <Search className="h-3.5 w-3.5 mr-1" />
-                  {searching ? 'Searching…' : 'Search'}
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-7 px-3 text-xs"
+                    disabled={searching || !form.tracking.trim()}
+                    onClick={handleSearch}
+                  >
+                    <Search className="h-3 w-3 mr-1" />
+                    {searching ? 'Searching…' : 'Search'}
+                  </Button>
+                  {searchMsg && (
+                    <p className={`text-xs ${searchMsg.type === 'ok' ? 'text-green-600' : 'text-amber-600'}`}>
+                      {searchMsg.text}
+                    </p>
+                  )}
+                </div>
               </div>
-              {searchMsg && (
-                <p className={`text-xs mt-1 ${searchMsg.type === 'ok' ? 'text-green-600' : 'text-amber-600'}`}>
-                  {searchMsg.text}
-                </p>
-              )}
             </div>
 
             <div className="space-y-1">
