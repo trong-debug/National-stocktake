@@ -3,6 +3,7 @@ export const dynamic = 'force-dynamic'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Sidebar from '@/components/Sidebar'
+import TopNav from '@/components/TopNav'
 
 export default async function ProtectedLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient()
@@ -19,8 +20,11 @@ export default async function ProtectedLayout({ children }: { children: React.Re
   return (
     <div className="flex h-screen bg-slate-50">
       <Sidebar profile={profile} />
-      <main className="flex-1 overflow-auto">
-        {children}
+      <main className="flex-1 flex flex-col overflow-hidden">
+        <TopNav />
+        <div className="flex-1 overflow-auto">
+          {children}
+        </div>
       </main>
     </div>
   )

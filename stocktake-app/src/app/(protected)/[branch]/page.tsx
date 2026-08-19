@@ -1,7 +1,7 @@
 export const dynamic = 'force-dynamic'
 
 import { createClient } from '@/lib/supabase/server'
-import { BRANCH_MAP, DEPT_MAP } from '@/lib/constants'
+import { DEPT_MAP } from '@/lib/constants'
 import type { Branch, StockItem } from '@/types'
 import { notFound } from 'next/navigation'
 import BranchTable from '@/components/BranchTable'
@@ -69,13 +69,7 @@ export default async function BranchPage({ params, searchParams }: PageProps) {
 
   return (
     <div className="p-6 max-w-full space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-bold bg-blue-900 text-white rounded px-2 py-1">{branch}</span>
-            <h1 className="text-xl font-bold text-slate-900">{BRANCH_MAP[branch]}</h1>
-          </div>
-        </div>
+      <div className="flex items-center justify-end">
         <div className="flex items-center gap-6">
           {/* Stats chips */}
           <div className="flex items-center gap-4 text-sm">

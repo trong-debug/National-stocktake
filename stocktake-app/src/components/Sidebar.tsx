@@ -4,18 +4,15 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { BRANCHES } from '@/lib/constants'
 import type { Profile } from '@/types'
 import { cn } from '@/lib/utils'
 import {
-  LayoutDashboard,
   LogOut,
   Settings,
   Upload,
   ChevronDown,
   Users,
   UserCog,
-  GitBranch,
   Package2,
 } from 'lucide-react'
 import NotificationBell from '@/components/NotificationBell'
@@ -29,9 +26,6 @@ export default function Sidebar({ profile }: SidebarProps) {
   const router = useRouter()
   const supabase = createClient()
 
-  const [branchesOpen, setBranchesOpen] = useState(
-    BRANCHES.some(b => pathname === `/${b.value}`)
-  )
   const [adminOpen, setAdminOpen] = useState(pathname.startsWith('/admin'))
 
   async function handleSignOut() {
@@ -57,50 +51,6 @@ export default function Sidebar({ profile }: SidebarProps) {
 
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto py-2">
-
-        {/* Dashboard */}
-        <NavRow
-          href="/"
-          icon={<LayoutDashboard className="h-5 w-5" />}
-          label="Dashboard"
-          active={pathname === '/'}
-        />
-
-        {/* Branches group */}
-        <button
-          onClick={() => setBranchesOpen(o => !o)}
-          className="w-full flex items-center gap-3 px-5 py-3 text-sm font-medium transition-colors text-left"
-          style={{
-            backgroundColor: branchesOpen ? 'rgba(255,255,255,0.06)' : undefined,
-            color: 'rgba(255,255,255,0.95)',
-          }}
-          onMouseEnter={e => { if (!branchesOpen) (e.currentTarget as HTMLElement).style.backgroundColor = 'rgba(255,255,255,0.05)' }}
-          onMouseLeave={e => { if (!branchesOpen) (e.currentTarget as HTMLElement).style.backgroundColor = '' }}
-        >
-          <GitBranch className="h-5 w-5 shrink-0" />
-          <span className="flex-1">Branches</span>
-          <ChevronDown className={cn('h-4 w-4 transition-transform shrink-0', branchesOpen && 'rotate-180')} style={{ color: 'rgba(255,255,255,0.7)' }} />
-        </button>
-
-        {branchesOpen && (
-          <div style={{ backgroundColor: 'rgba(255,255,255,0.04)' }}>
-            {BRANCHES.map(({ value, label }) => (
-              <Link
-                key={value}
-                href={`/${value}`}
-                className="flex items-center gap-3 pl-12 pr-5 py-2.5 text-sm transition-colors"
-                style={{
-                  backgroundColor: pathname === `/${value}` ? 'rgba(255,255,255,0.12)' : undefined,
-                  color: pathname === `/${value}` ? '#ffffff' : 'rgba(255,255,255,0.8)',
-                  fontWeight: pathname === `/${value}` ? 600 : 400,
-                }}
-              >
-                <span className="text-xs font-mono font-bold w-8 shrink-0">{value}</span>
-                <span className="truncate">{label}</span>
-              </Link>
-            ))}
-          </div>
-        )}
 
         {/* Admin group */}
         {isAdmin && (
