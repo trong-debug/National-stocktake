@@ -151,7 +151,7 @@ export default function NewItemButton({ branch, profile }: Props) {
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-3xl">
+        <DialogContent className="max-w-4xl w-[900px]">
           <DialogHeader>
             <DialogTitle>Log New Item — {branch}</DialogTitle>
           </DialogHeader>
@@ -178,7 +178,7 @@ export default function NewItemButton({ branch, profile }: Props) {
               />
             </div>
 
-            <div className="grid gap-3" style={{ gridTemplateColumns: '2fr 3fr' }}>
+            <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
                 <Label className="text-xs">Serial</Label>
                 <Input value={form.serial} onChange={e => set('serial', e.target.value)} placeholder="Order / serial #" className="h-9 text-sm font-mono" />
