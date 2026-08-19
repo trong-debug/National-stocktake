@@ -139,13 +139,11 @@ export default function Sidebar({ profile }: SidebarProps) {
         <FakeRow icon={<Package className="h-5 w-5" />} label="Inventory" expandable />
         <FakeRow icon={<HelpCircle className="h-5 w-5" />} label="API FAQ" />
         <FakeRow icon={<RefreshCw className="h-5 w-5" />} label="Change Client" />
-      </nav>
 
-      {/* National Stocktake pinned at bottom */}
-      <div style={{ borderTop: '1px solid rgba(255,255,255,0.15)' }}>
+        {/* National Stocktake — real functional item */}
         <Link
           href="/"
-          className="flex items-center gap-3 px-4 py-3.5 text-sm font-semibold transition-colors"
+          className="flex items-center gap-3 px-4 py-3 text-sm font-semibold transition-colors"
           style={{ backgroundColor: 'rgba(0,0,0,0.18)' }}
           onMouseEnter={e => (e.currentTarget as HTMLElement).style.backgroundColor = 'rgba(0,0,0,0.25)'}
           onMouseLeave={e => (e.currentTarget as HTMLElement).style.backgroundColor = 'rgba(0,0,0,0.18)'}
@@ -159,9 +157,13 @@ export default function Sidebar({ profile }: SidebarProps) {
             NEW
           </span>
         </Link>
+      </nav>
+
+      {/* Sign out footer */}
+      <div style={{ borderTop: '1px solid rgba(255,255,255,0.15)' }}>
         <button
           onClick={handleSignOut}
-          className="w-full flex items-center gap-2 px-4 py-2.5 text-xs cursor-pointer transition-colors"
+          className="w-full flex items-center gap-2 px-4 py-3 text-xs cursor-pointer transition-colors"
           style={{ color: 'rgba(255,255,255,0.6)' }}
           onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = '#fff'}
           onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.6)'}
