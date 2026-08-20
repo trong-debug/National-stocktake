@@ -45,16 +45,20 @@ export default function TopNav() {
       <div className="w-px bg-slate-200 my-2 mx-1 shrink-0" />
 
       {/* Branch tabs */}
-      {BRANCHES.map(b => (
+      {BRANCHES.map(b => {
+        const isActive = activeBranch === b.value
+        const color = BRANCH_COLORS[b.value]
+        return (
         <button
           key={b.value}
           onClick={() => router.push(`/${b.value}`)}
           className={cn(
             'flex items-center gap-2 px-3 h-11 text-sm font-medium border-b-2 whitespace-nowrap shrink-0 transition-colors cursor-pointer',
-            activeBranch === b.value
-              ? 'border-blue-600 text-blue-700 font-semibold'
+            isActive
+              ? 'font-semibold'
               : 'border-transparent text-slate-500 hover:text-slate-800 hover:border-slate-300'
           )}
+          style={isActive ? { borderColor: color, color } : undefined}
         >
           <span
             className="text-white rounded font-bold"
@@ -69,7 +73,8 @@ export default function TopNav() {
           </span>
           <span>{b.label}</span>
         </button>
-      ))}
+        )
+      })}
     </div>
   )
 }
