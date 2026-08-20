@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils'
 const BRANCH_COLORS: Record<string, string> = {
   NSW: '#dc2626',
   QLD: '#ea580c',
-  VIC: '#1d4ed8',
+  VIC: '#4f46e5',
   ADL: '#059669',
   PER: '#ca8a04',
   CBR: '#0d9488',
