@@ -29,7 +29,7 @@ const DEPT_BADGE: Record<Dept, string> = {
 
 const DEPT_TABS = [
   { value: 'all',        label: 'All Depts',     color: '#334155', icon: LayoutGrid },
-  { value: 'RP',         label: 'Operations',    color: '#3b82f6', icon: ClipboardList },
+  { value: 'RP',         label: 'Route Planner', color: '#3b82f6', icon: ClipboardList },
   { value: 'CC',         label: 'Customer Care', color: '#9333ea', icon: Headphones },
   { value: 'WH',         label: 'Warehouse',     color: '#d97706', icon: Package },
   { value: 'DM',         label: 'Driver Mgmt',   color: '#16a34a', icon: Truck },
