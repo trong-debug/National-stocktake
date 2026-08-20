@@ -2,6 +2,16 @@ export const dynamic = 'force-dynamic'
 
 import { createClient } from '@/lib/supabase/server'
 import { BRANCH_MAP } from '@/lib/constants'
+
+const BRANCH_COLORS: Record<string, string> = {
+  NSW: '#dc2626',
+  QLD: '#ea580c',
+  VIC: '#4f46e5',
+  ADL: '#059669',
+  PER: '#ca8a04',
+  CBR: '#0d9488',
+  NTL: '#64748b',
+}
 import type { Branch, BranchStats } from '@/types'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link'
@@ -92,7 +102,7 @@ export default async function DashboardPage() {
                   <tr key={row.branch} className={`border-b hover:bg-slate-50 transition-colors ${i % 2 === 0 ? '' : 'bg-slate-50/50'}`}>
                     <td className="px-4 py-3 font-medium text-slate-900">
                       <span className="inline-flex items-center gap-2">
-                        <span className="text-xs font-bold bg-blue-900 text-white rounded px-1.5 py-0.5">{row.branch}</span>
+                        <span className="text-xs font-bold text-white rounded px-1.5 py-0.5" style={{ backgroundColor: BRANCH_COLORS[row.branch] ?? '#64748b' }}>{row.branch}</span>
                         {row.label}
                       </span>
                     </td>
