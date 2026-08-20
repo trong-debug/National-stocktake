@@ -9,8 +9,8 @@ const BRANCH_COLORS: Record<string, string> = {
   NSW: '#dc2626',
   QLD: '#ea580c',
   VIC: '#1d4ed8',
-  ADL: '#059669',
-  PER: '#ca8a04',
+  SA:  '#059669',
+  WA:  '#ca8a04',
   CBR: '#0d9488',
   NTL: '#64748b',
 }
@@ -59,15 +59,14 @@ export default function TopNav() {
           <span
             className="text-white rounded font-bold"
             style={{
-              backgroundColor: BRANCH_COLORS[b.value],
+              backgroundColor: BRANCH_COLORS[b.label],
               fontSize: '9px',
               padding: '2px 5px',
               letterSpacing: '0.03em',
             }}
           >
-            {b.value}
+            {b.label}
           </span>
-          <span>{b.label}</span>
         </button>
       ))}
     </div>
