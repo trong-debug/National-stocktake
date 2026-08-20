@@ -1,23 +1,23 @@
 import type { Branch, Dept } from '@/types'
 
 export const BRANCHES: { value: Branch; label: string }[] = [
-  { value: 'NSW', label: 'NSW' },
-  { value: 'QLD', label: 'QLD' },
-  { value: 'VIC', label: 'VIC' },
-  { value: 'ADL', label: 'SA' },
-  { value: 'PER', label: 'WA' },
-  { value: 'CBR', label: 'CBR' },
-  { value: 'NTL', label: 'NTL' },
+  { value: 'NSW', label: 'Sydney' },
+  { value: 'QLD', label: 'Brisbane' },
+  { value: 'VIC', label: 'Melbourne' },
+  { value: 'ADL', label: 'Adelaide' },
+  { value: 'PER', label: 'Perth' },
+  { value: 'CBR', label: 'Canberra' },
+  { value: 'NTL', label: 'Newcastle' },
 ]
 
 export const BRANCH_MAP: Record<Branch, string> = {
-  NSW: 'NSW',
-  QLD: 'QLD',
-  VIC: 'VIC',
-  ADL: 'SA',
-  PER: 'WA',
-  CBR: 'CBR',
-  NTL: 'NTL',
+  NSW: 'Sydney',
+  QLD: 'Brisbane',
+  VIC: 'Melbourne',
+  ADL: 'Adelaide',
+  PER: 'Perth',
+  CBR: 'Canberra',
+  NTL: 'Newcastle',
 }
 
 export const DEPTS: { value: Dept; label: string; color: string }[] = [
