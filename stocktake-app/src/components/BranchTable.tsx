@@ -8,7 +8,7 @@ import { DEPTS } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Search, ChevronLeft, ChevronRight, X } from 'lucide-react'
+import { Search, ChevronLeft, ChevronRight, X, LayoutGrid, ClipboardList, Headphones, Package, Truck, CircleDashed } from 'lucide-react'
 
 interface Props {
   items: StockItem[]
@@ -28,9 +28,12 @@ const DEPT_BADGE: Record<Dept, string> = {
 }
 
 const DEPT_TABS = [
-  { value: 'all', label: 'All Depts' },
-  ...DEPTS.map(d => ({ value: d.value, label: d.value })),
-  { value: 'unassigned', label: 'Unassigned' },
+  { value: 'all',        label: 'All Depts',     color: '#334155', icon: LayoutGrid },
+  { value: 'RP',         label: 'Operations',    color: '#3b82f6', icon: ClipboardList },
+  { value: 'CC',         label: 'Customer Care', color: '#9333ea', icon: Headphones },
+  { value: 'WH',         label: 'Warehouse',     color: '#d97706', icon: Package },
+  { value: 'DM',         label: 'Driver Mgmt',   color: '#16a34a', icon: Truck },
+  { value: 'unassigned', label: 'Unassigned',    color: '#94a3b8', icon: CircleDashed },
 ]
 
 export default function BranchTable({ items, branch, totalPages, currentPage, totalCount, filters, profile }: Props) {
@@ -67,22 +70,30 @@ export default function BranchTable({ items, branch, totalPages, currentPage, to
   return (
     <div className={cn('space-y-0', isPending && 'opacity-60 pointer-events-none')}>
 
-      {/* Dept tab strip */}
-      <div className="flex items-end border-b border-slate-200 bg-white overflow-x-auto">
-        {DEPT_TABS.map(tab => (
-          <button
-            key={tab.value}
-            onClick={() => updateParams({ dept: tab.value })}
-            className={cn(
-              'px-4 py-2.5 text-sm font-medium whitespace-nowrap border-b-2 transition-colors shrink-0',
-              activeDept === tab.value
-                ? 'border-blue-600 text-blue-700'
-                : 'border-transparent text-slate-500 hover:text-slate-800 hover:border-slate-300'
-            )}
-          >
-            {tab.label}
-          </button>
-        ))}
+      {/* Dept tab strip — segment control */}
+      <div className="bg-white border-b border-slate-200 px-3 py-2 overflow-x-auto">
+        <div className="inline-flex items-center gap-1 bg-slate-100 rounded-xl p-1 min-w-max">
+          {DEPT_TABS.map(tab => {
+            const Icon = tab.icon
+            const isActive = activeDept === tab.value
+            return (
+              <button
+                key={tab.value}
+                onClick={() => updateParams({ dept: tab.value })}
+                className={cn(
+                  'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all shrink-0',
+                  isActive
+                    ? 'bg-white shadow-sm font-semibold'
+                    : 'text-slate-500 hover:bg-white/60 hover:text-slate-800'
+                )}
+                style={isActive ? { color: tab.color } : undefined}
+              >
+                <Icon className="h-3.5 w-3.5 shrink-0" />
+                {tab.label}
+              </button>
+            )
+          })}
+        </div>
       </div>
 
       {/* Filter bar */}
