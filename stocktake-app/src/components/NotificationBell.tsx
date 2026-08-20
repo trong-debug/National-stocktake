@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { Bell } from 'lucide-react'
@@ -19,7 +19,9 @@ interface Notification {
 export default function NotificationBell({ userId }: { userId: string }) {
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [open, setOpen] = useState(false)
+  const [popupPos, setPopupPos] = useState({ top: 0, left: 0 })
   const containerRef = useRef<HTMLDivElement>(null)
+  const buttonRef = useRef<HTMLButtonElement>(null)
   const supabase = createClient()
 
   const unread = notifications.filter(n => !n.read).length
@@ -66,8 +68,18 @@ export default function NotificationBell({ userId }: { userId: string }) {
   return (
     <div ref={containerRef} className="relative">
       <button
-        onClick={() => setOpen(o => !o)}
-        className="relative p-1.5 rounded-lg hover:bg-blue-800 transition-colors"
+        ref={buttonRef}
+        onClick={() => {
+          if (buttonRef.current) {
+            const rect = buttonRef.current.getBoundingClientRect()
+            setPopupPos({ top: rect.bottom + 8, left: Math.min(rect.left, window.innerWidth - 328) })
+          }
+          setOpen(o => !o)
+        }}
+        className="relative p-1.5 rounded-lg transition-colors cursor-pointer"
+        style={{ backgroundColor: 'transparent' }}
+        onMouseEnter={e => (e.currentTarget as HTMLElement).style.backgroundColor = 'rgba(0,0,0,0.15)'}
+        onMouseLeave={e => (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent'}
         aria-label="Notifications"
       >
         <Bell className="h-5 w-5 text-blue-200" />
@@ -79,7 +91,10 @@ export default function NotificationBell({ userId }: { userId: string }) {
       </button>
 
       {open && (
-        <div className="absolute left-0 bottom-full mb-2 w-80 bg-white rounded-xl shadow-2xl border z-50 overflow-hidden">
+        <div
+          className="w-80 bg-white rounded-xl shadow-2xl border overflow-hidden"
+          style={{ position: 'fixed', top: popupPos.top, left: popupPos.left, zIndex: 9999 }}
+        >
           <div className="flex items-center justify-between px-4 py-3 border-b bg-slate-50">
             <h3 className="font-semibold text-slate-800 text-sm">Notifications</h3>
             {unread > 0 && (
