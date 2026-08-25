@@ -8,7 +8,7 @@ import { DEPTS } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Search, ChevronLeft, ChevronRight, X, LayoutGrid, ClipboardList, Headphones, Package, Truck, CircleDashed } from 'lucide-react'
+import { Search, ChevronLeft, ChevronRight, X, LayoutGrid, ClipboardList, Headphones, Package, Truck, CircleDashed, CalendarClock, CornerUpRight } from 'lucide-react'
 
 interface Props {
   items: StockItem[]
@@ -42,6 +42,7 @@ export default function BranchTable({ items, branch, totalPages, currentPage, to
   const searchParams = useSearchParams()
   const [isPending, startTransition] = useTransition()
   const [search, setSearch] = useState(filters.q || '')
+  const [selectedId, setSelectedId] = useState<string | null>(null)
 
   const updateParams = useCallback((updates: Record<string, string | undefined>) => {
     const params = new URLSearchParams(searchParams.toString())
@@ -95,6 +96,22 @@ export default function BranchTable({ items, branch, totalPages, currentPage, to
           })}
         </div>
       </div>
+
+      {/* Selection action bar */}
+      {selectedId && (
+        <div className="flex items-center gap-2 px-4 py-2 bg-blue-50 border-b border-blue-100">
+          <span className="text-xs text-blue-700 font-medium flex-1">1 item selected</span>
+          <Button size="sm" variant="outline" className="h-8 gap-1.5 text-xs border-blue-300 text-blue-700 hover:bg-blue-100">
+            <CalendarClock className="h-3.5 w-3.5" />
+            Reschedule
+          </Button>
+          <Button size="sm" variant="outline" className="h-8 gap-1.5 text-xs border-blue-300 text-blue-700 hover:bg-blue-100">
+            <CornerUpRight className="h-3.5 w-3.5" />
+            Redirect
+          </Button>
+          <button onClick={() => setSelectedId(null)} className="text-xs text-blue-400 hover:text-blue-700 ml-1">✕ Clear</button>
+        </div>
+      )}
 
       {/* Filter bar */}
       <div className="flex items-center gap-2 py-3 bg-white border-b border-slate-100 flex-wrap">
@@ -164,6 +181,7 @@ export default function BranchTable({ items, branch, totalPages, currentPage, to
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b bg-slate-50 text-slate-500 text-xs uppercase tracking-wide">
+              <th className="px-3 py-2.5 w-8"></th>
               <th className="text-left px-3 py-2.5 font-semibold">Date</th>
               <th className="text-left px-3 py-2.5 font-semibold">Client</th>
               <th className="text-left px-3 py-2.5 font-semibold">Serial</th>
@@ -179,7 +197,7 @@ export default function BranchTable({ items, branch, totalPages, currentPage, to
           <tbody>
             {items.length === 0 ? (
               <tr>
-                <td colSpan={10} className="text-center py-16 text-slate-400">
+                <td colSpan={11} className="text-center py-16 text-slate-400">
                   No items found{filters.q || filters.status || filters.dept ? ' for these filters' : ''}
                 </td>
               </tr>
@@ -189,9 +207,18 @@ export default function BranchTable({ items, branch, totalPages, currentPage, to
                 onClick={() => router.push(`/item/${item.id}`)}
                 className={cn(
                   'border-b last:border-0 hover:bg-blue-50/50 transition-colors cursor-pointer',
-                  i % 2 === 1 && 'bg-slate-50/40'
+                  i % 2 === 1 && 'bg-slate-50/40',
+                  selectedId === item.id && 'bg-blue-50'
                 )}
               >
+                <td className="px-3 py-2.5 w-8" onClick={e => e.stopPropagation()}>
+                  <input
+                    type="checkbox"
+                    checked={selectedId === item.id}
+                    onChange={() => setSelectedId(selectedId === item.id ? null : item.id)}
+                    className="h-4 w-4 rounded border-slate-300 accent-blue-600 cursor-pointer"
+                  />
+                </td>
                 <td className="px-3 py-2.5 text-slate-400 whitespace-nowrap text-xs">
                   {item.date_listed ? format(new Date(item.date_listed), 'd MMM yy') : '—'}
                 </td>
