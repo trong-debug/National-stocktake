@@ -38,7 +38,6 @@ export default function NewItemButton({ branch, profile }: Props) {
   const [form, setForm] = useState({
     date_listed: new Date().toISOString().split('T')[0],
     client: '',
-    serial: '',
     tracking: '',
     customer_name: '',
     status_code: '',
@@ -52,15 +51,15 @@ export default function NewItemButton({ branch, profile }: Props) {
   }
 
   async function handleSearch() {
-    const tracking = form.tracking.trim()
-    if (!tracking) return
+    const ref = form.tracking.trim()
+    if (!ref) return
     setSearching(true)
     setSearchMsg(null)
 
     const { data } = await supabase
       .from('stock_items')
-      .select('client, serial, customer_name, status_code, delivery_depot, dept_assigned, action_required')
-      .ilike('tracking', tracking)
+      .select('client, customer_name, status_code, delivery_depot, dept_assigned, action_required')
+      .or(`tracking.ilike.${ref},serial.ilike.${ref}`)
       .order('created_at', { ascending: false })
       .limit(1)
       .maybeSingle()
@@ -69,7 +68,6 @@ export default function NewItemButton({ branch, profile }: Props) {
       setForm(f => ({
         ...f,
         client: data.client || f.client,
-        serial: data.serial || f.serial,
         customer_name: data.customer_name || f.customer_name,
         status_code: data.status_code || f.status_code,
         delivery_depot: data.delivery_depot || f.delivery_depot,
@@ -78,7 +76,7 @@ export default function NewItemButton({ branch, profile }: Props) {
       }))
       setSearchMsg({ type: 'ok', text: 'Fields pre-filled from existing record.' })
     } else {
-      setSearchMsg({ type: 'err', text: 'No existing item found with that tracking number.' })
+      setSearchMsg({ type: 'err', text: 'No existing item found with that tracking or serial number.' })
     }
 
     setSearching(false)
@@ -97,7 +95,6 @@ export default function NewItemButton({ branch, profile }: Props) {
         dept_assigned: form.dept_assigned || null,
         date_listed: form.date_listed || null,
         client: form.client || null,
-        serial: form.serial || null,
         tracking: form.tracking || null,
         customer_name: form.customer_name || null,
         status_code: form.status_code || null,
@@ -141,7 +138,7 @@ export default function NewItemButton({ branch, profile }: Props) {
   return (
     <>
       <Button onClick={() => {
-        setForm({ date_listed: new Date().toISOString().split('T')[0], client: '', serial: '', tracking: '', customer_name: '', status_code: '', action_required: '', delivery_depot: '', dept_assigned: '' })
+        setForm({ date_listed: new Date().toISOString().split('T')[0], client: '', tracking: '', customer_name: '', status_code: '', action_required: '', delivery_depot: '', dept_assigned: '' })
         setSubmitError(null)
         setSearchMsg(null)
         setOpen(true)
@@ -178,38 +175,32 @@ export default function NewItemButton({ branch, profile }: Props) {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1">
-                <Label className="text-xs">Serial</Label>
-                <Input value={form.serial} onChange={e => set('serial', e.target.value)} placeholder="Order / serial #" className="h-9 text-sm font-mono" />
-              </div>
-              <div className="space-y-1">
-                <Label className="text-xs">Tracking</Label>
+            <div className="space-y-1">
+              <Label className="text-xs">Tracking / Serial No.</Label>
+              <div className="flex gap-2">
                 <Input
                   value={form.tracking}
                   onChange={e => { set('tracking', e.target.value); setSearchMsg(null) }}
-                  placeholder="Tracking code"
-                  className="h-9 text-sm font-mono w-full"
+                  placeholder="Enter tracking number or serial ID"
+                  className="h-9 text-sm font-mono flex-1"
                 />
-                <div className="flex items-center gap-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="h-7 px-3 text-xs"
-                    disabled={searching || !form.tracking.trim()}
-                    onClick={handleSearch}
-                  >
-                    <Search className="h-3 w-3 mr-1" />
-                    {searching ? 'Searching…' : 'Search'}
-                  </Button>
-                  {searchMsg && (
-                    <p className={`text-xs ${searchMsg.type === 'ok' ? 'text-green-600' : 'text-amber-600'}`}>
-                      {searchMsg.text}
-                    </p>
-                  )}
-                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="h-9 px-3 text-xs shrink-0"
+                  disabled={searching || !form.tracking.trim()}
+                  onClick={handleSearch}
+                >
+                  <Search className="h-3 w-3 mr-1" />
+                  {searching ? 'Searching…' : 'Search'}
+                </Button>
               </div>
+              {searchMsg && (
+                <p className={`text-xs ${searchMsg.type === 'ok' ? 'text-green-600' : 'text-amber-600'}`}>
+                  {searchMsg.text}
+                </p>
+              )}
             </div>
 
             <div className="space-y-1">
