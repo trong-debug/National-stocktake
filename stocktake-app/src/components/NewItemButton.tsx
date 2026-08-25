@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import ClientCombobox from '@/components/ClientCombobox'
 import DeliveryDepotCombobox from '@/components/DeliveryDepotCombobox'
 import StatusCodeCombobox from '@/components/StatusCodeCombobox'
-import { Plus, Search } from 'lucide-react'
+import { Plus, Search, Lock } from 'lucide-react'
 
 interface Props {
   branch: Branch
@@ -41,6 +41,7 @@ export default function NewItemButton({ branch, profile }: Props) {
     tracking: '',
     customer_name: '',
     status_code: '',
+    transaction_notes: '',
     action_required: '',
     delivery_depot: '',
     dept_assigned: '' as string,
@@ -58,7 +59,7 @@ export default function NewItemButton({ branch, profile }: Props) {
 
     const { data } = await supabase
       .from('stock_items')
-      .select('client, customer_name, status_code, delivery_depot, dept_assigned, action_required')
+      .select('client, customer_name, status_code, delivery_depot, dept_assigned, transaction_notes, action_required')
       .or(`tracking.ilike.${ref},serial.ilike.${ref}`)
       .order('created_at', { ascending: false })
       .limit(1)
@@ -72,6 +73,7 @@ export default function NewItemButton({ branch, profile }: Props) {
         status_code: data.status_code || f.status_code,
         delivery_depot: data.delivery_depot || f.delivery_depot,
         dept_assigned: data.dept_assigned || f.dept_assigned,
+        transaction_notes: (data as any).transaction_notes || f.transaction_notes,
         action_required: data.action_required || f.action_required,
       }))
       setSearchMsg({ type: 'ok', text: 'Fields pre-filled from existing record.' })
@@ -138,7 +140,7 @@ export default function NewItemButton({ branch, profile }: Props) {
   return (
     <>
       <Button onClick={() => {
-        setForm({ date_listed: new Date().toISOString().split('T')[0], client: '', tracking: '', customer_name: '', status_code: '', action_required: '', delivery_depot: '', dept_assigned: '' })
+        setForm({ date_listed: new Date().toISOString().split('T')[0], client: '', tracking: '', customer_name: '', status_code: '', transaction_notes: '', action_required: '', delivery_depot: '', dept_assigned: '' })
         setSubmitError(null)
         setSearchMsg(null)
         setOpen(true)
@@ -222,6 +224,21 @@ export default function NewItemButton({ branch, profile }: Props) {
                   </SelectContent>
                 </Select>
               </div>
+            </div>
+
+            <div className="space-y-1">
+              <div className="flex items-center gap-1.5">
+                <Label className="text-xs">Transaction Notes</Label>
+                <span className="inline-flex items-center gap-0.5 text-[10px] text-slate-400 font-normal">
+                  <Lock className="h-2.5 w-2.5" /> from driver · read only
+                </span>
+              </div>
+              <textarea
+                value={form.transaction_notes}
+                readOnly
+                placeholder="Driver delivery notes will appear here when a matching record is found…"
+                className="w-full border border-slate-200 rounded-md px-3 py-2 text-sm min-h-[80px] bg-slate-50 text-slate-500 cursor-not-allowed resize-none"
+              />
             </div>
 
             <div className="space-y-1">
