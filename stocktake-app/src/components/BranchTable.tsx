@@ -32,7 +32,7 @@ const DEPT_TABS = [
   { value: 'RP',         label: 'Route Planner', color: '#3b82f6', icon: ClipboardList },
   { value: 'CC',         label: 'Customer Care', color: '#9333ea', icon: Headphones },
   { value: 'WH',         label: 'Warehouse',     color: '#d97706', icon: Package },
-  { value: 'DM',         label: 'Driver Mgmt',   color: '#16a34a', icon: Truck },
+  { value: 'DM',         label: 'Driver Management', color: '#16a34a', icon: Truck },
   { value: 'unassigned', label: 'Unassigned',    color: '#94a3b8', icon: CircleDashed },
 ]
 
