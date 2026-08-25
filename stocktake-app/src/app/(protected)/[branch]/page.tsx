@@ -8,6 +8,8 @@ import BranchTable from '@/components/BranchTable'
 import NewItemButton from '@/components/NewItemButton'
 import ClearBranchButton from '@/components/ClearBranchButton'
 import ExportCSVButton from '@/components/ExportCSVButton'
+import { Button } from '@/components/ui/button'
+import { CalendarClock, CornerUpRight } from 'lucide-react'
 
 const VALID_BRANCHES = ['PER', 'ADL', 'QLD', 'VIC', 'CBR', 'NSW', 'NTL']
 
@@ -91,6 +93,14 @@ export default async function BranchPage({ params, searchParams }: PageProps) {
             {profile?.role === 'admin' && branchTotal != null && branchTotal > 0 && (
               <ClearBranchButton branch={branch} totalCount={branchTotal} />
             )}
+            <Button variant="outline" className="gap-1.5 text-slate-600 cursor-not-allowed opacity-70" disabled>
+              <CalendarClock className="h-4 w-4" />
+              Reschedule
+            </Button>
+            <Button variant="outline" className="gap-1.5 text-slate-600 cursor-not-allowed opacity-70" disabled>
+              <CornerUpRight className="h-4 w-4" />
+              Redirect
+            </Button>
             <NewItemButton branch={branch} profile={profile} />
           </div>
         </div>
