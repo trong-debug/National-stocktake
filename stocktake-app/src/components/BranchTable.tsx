@@ -8,7 +8,7 @@ import { DEPTS } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Search, ChevronLeft, ChevronRight, X, LayoutGrid, ClipboardList, Headphones, Package, Truck, CircleDashed, CalendarClock, CornerUpRight } from 'lucide-react'
+import { Search, ChevronLeft, ChevronRight, X, LayoutGrid, ClipboardList, Headphones, Package, Truck, CircleDashed } from 'lucide-react'
 
 interface Props {
   items: StockItem[]
@@ -18,6 +18,8 @@ interface Props {
   totalCount: number
   filters: { status?: string; dept?: string; q?: string }
   profile: Profile | null
+  selectedId: string | null
+  onSelectId: (id: string | null) => void
 }
 
 const DEPT_BADGE: Record<Dept, string> = {
@@ -36,13 +38,12 @@ const DEPT_TABS = [
   { value: 'unassigned', label: 'Unassigned',    color: '#94a3b8', icon: CircleDashed },
 ]
 
-export default function BranchTable({ items, branch, totalPages, currentPage, totalCount, filters, profile }: Props) {
+export default function BranchTable({ items, branch, totalPages, currentPage, totalCount, filters, profile, selectedId, onSelectId }: Props) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const [isPending, startTransition] = useTransition()
   const [search, setSearch] = useState(filters.q || '')
-  const [selectedId, setSelectedId] = useState<string | null>(null)
 
   const updateParams = useCallback((updates: Record<string, string | undefined>) => {
     const params = new URLSearchParams(searchParams.toString())
@@ -96,22 +97,6 @@ export default function BranchTable({ items, branch, totalPages, currentPage, to
           })}
         </div>
       </div>
-
-      {/* Selection action bar */}
-      {selectedId && (
-        <div className="flex items-center gap-2 px-4 py-2 bg-blue-50 border-b border-blue-100">
-          <span className="text-xs text-blue-700 font-medium flex-1">1 item selected</span>
-          <Button size="sm" variant="outline" className="h-8 gap-1.5 text-xs border-blue-300 text-blue-700 hover:bg-blue-100">
-            <CalendarClock className="h-3.5 w-3.5" />
-            Reschedule
-          </Button>
-          <Button size="sm" variant="outline" className="h-8 gap-1.5 text-xs border-blue-300 text-blue-700 hover:bg-blue-100">
-            <CornerUpRight className="h-3.5 w-3.5" />
-            Redirect
-          </Button>
-          <button onClick={() => setSelectedId(null)} className="text-xs text-blue-400 hover:text-blue-700 ml-1">✕ Clear</button>
-        </div>
-      )}
 
       {/* Filter bar */}
       <div className="flex items-center gap-2 py-3 bg-white border-b border-slate-100 flex-wrap">
@@ -215,7 +200,7 @@ export default function BranchTable({ items, branch, totalPages, currentPage, to
                   <input
                     type="checkbox"
                     checked={selectedId === item.id}
-                    onChange={() => setSelectedId(selectedId === item.id ? null : item.id)}
+                    onChange={() => onSelectId(selectedId === item.id ? null : item.id)}
                     className="h-4 w-4 rounded border-slate-300 accent-blue-600 cursor-pointer"
                   />
                 </td>

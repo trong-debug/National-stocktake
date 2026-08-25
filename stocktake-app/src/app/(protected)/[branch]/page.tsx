@@ -1,13 +1,9 @@
 export const dynamic = 'force-dynamic'
 
 import { createClient } from '@/lib/supabase/server'
-import { DEPT_MAP } from '@/lib/constants'
 import type { Branch, StockItem } from '@/types'
 import { notFound } from 'next/navigation'
-import BranchTable from '@/components/BranchTable'
-import NewItemButton from '@/components/NewItemButton'
-import ClearBranchButton from '@/components/ClearBranchButton'
-import ExportCSVButton from '@/components/ExportCSVButton'
+import BranchPageClient from '@/components/BranchPageClient'
 
 const VALID_BRANCHES = ['PER', 'ADL', 'QLD', 'VIC', 'CBR', 'NSW', 'NTL']
 
@@ -49,7 +45,6 @@ export default async function BranchPage({ params, searchParams }: PageProps) {
     )
   }
 
-  // Run all queries in parallel — stats queries are unfiltered for the summary bar
   const [
     { data: { user } },
     { data: items, count },
@@ -68,43 +63,17 @@ export default async function BranchPage({ params, searchParams }: PageProps) {
   const branchDone = (branchTotal ?? 0) - (branchOpen ?? 0)
 
   return (
-    <div className="p-6 max-w-full space-y-4">
-      <div className="flex items-center justify-end">
-        <div className="flex items-center gap-6">
-          {/* Stats chips */}
-          <div className="flex items-center gap-4 text-sm">
-            <div className="text-right">
-              <p className="text-xs text-slate-400 uppercase tracking-wide font-medium leading-none mb-0.5">Total</p>
-              <p className="font-bold text-slate-800 tabular-nums">{(branchTotal ?? 0).toLocaleString()}</p>
-            </div>
-            <div className="text-right">
-              <p className="text-xs text-blue-500 uppercase tracking-wide font-medium leading-none mb-0.5">Open</p>
-              <p className="font-bold text-blue-700 tabular-nums">{(branchOpen ?? 0).toLocaleString()}</p>
-            </div>
-            <div className="text-right">
-              <p className="text-xs text-slate-400 uppercase tracking-wide font-medium leading-none mb-0.5">Done</p>
-              <p className="font-bold text-slate-500 tabular-nums">{branchDone.toLocaleString()}</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 border-l pl-6">
-            {branchTotal != null && branchTotal > 0 && <ExportCSVButton branch={branch} />}
-            {profile?.role === 'admin' && branchTotal != null && branchTotal > 0 && (
-              <ClearBranchButton branch={branch} totalCount={branchTotal} />
-            )}
-            <NewItemButton branch={branch} profile={profile} />
-          </div>
-        </div>
-      </div>
-
-      <BranchTable
-        items={(items as unknown as StockItem[]) || []}
-        branch={branch}
-        totalPages={totalPages}
-        currentPage={pageNum}
-        totalCount={count || 0}
-        filters={{ status: effectiveStatus, dept, q }}
-        profile={profile}
-      />
-    </div>
+    <BranchPageClient
+      branch={branch}
+      items={(items as unknown as StockItem[]) || []}
+      totalPages={totalPages}
+      currentPage={pageNum}
+      totalCount={count || 0}
+      filters={{ status: effectiveStatus, dept, q }}
+      profile={profile}
+      branchTotal={branchTotal ?? 0}
+      branchOpen={branchOpen ?? 0}
+      branchDone={branchDone}
+    />
   )
 }
