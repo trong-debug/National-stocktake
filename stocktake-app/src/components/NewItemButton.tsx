@@ -60,8 +60,8 @@ export default function NewItemButton({ branch, profile }: Props) {
     setSearchMsg(null)
 
     const filters: string[] = []
-    if (tracking) filters.push(`tracking.ilike.${tracking}`)
-    if (serial)   filters.push(`serial.ilike.${serial}`)
+    if (tracking) filters.push(`tracking.ilike.%${tracking}%`)
+    if (serial)   filters.push(`serial.ilike.%${serial}%`)
 
     const { data } = await supabase
       .from('stock_items')
