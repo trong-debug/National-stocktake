@@ -63,15 +63,18 @@ export default function NewItemButton({ branch, profile }: Props) {
     if (tracking) filters.push(`tracking.ilike.%${tracking}%`)
     if (serial)   filters.push(`serial.ilike.%${serial}%`)
 
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('stock_items')
-      .select('client, serial, customer_name, status_code, delivery_depot, dept_assigned, transaction_notes, action_required')
+      .select('client, serial, customer_name, status_code, delivery_depot, dept_assigned, action_required')
       .or(filters.join(','))
       .order('created_at', { ascending: false })
       .limit(1)
       .maybeSingle()
 
-    if (data) {
+    if (error) {
+      console.error('[handleSearch] query error:', error)
+      setSearchMsg({ type: 'err', text: `Search error: ${error.message}` })
+    } else if (data) {
       setForm(f => ({
         ...f,
         client: data.client || f.client,
@@ -80,7 +83,6 @@ export default function NewItemButton({ branch, profile }: Props) {
         status_code: data.status_code || f.status_code,
         delivery_depot: data.delivery_depot || f.delivery_depot,
         dept_assigned: data.dept_assigned || f.dept_assigned,
-        transaction_notes: (data as any).transaction_notes || f.transaction_notes,
         action_required: data.action_required || f.action_required,
       }))
       setSearchMsg({ type: 'ok', text: 'Fields pre-filled from existing record.' })
